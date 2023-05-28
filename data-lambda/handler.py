@@ -1,7 +1,7 @@
 from decimal import Decimal
 import boto3
 from nba_api.stats.endpoints import leaguedashplayerstats
-import pandas as pd
+import pandas
 
 def fetchData(event, context):
     try:
