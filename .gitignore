@@ -2,3 +2,5 @@ node_modules
 .serverless
 packages-layer
 .jupyter
+bharis.png
+.env

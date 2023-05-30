@@ -1,0 +1,19 @@
+type Player {
+  id: ID!
+  name: String!
+  age: Int!
+  team: String
+  games: Int!
+  pts: Int
+  reb: Int
+  ast: Int!
+  stl: Int
+  blk: Int!
+  fgPct: Float!
+  ftPct: Float!
+  fg3Pct: Float!
+}
+
+type Query {
+  getRandomPlayer: Player
+}
