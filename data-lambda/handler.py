@@ -8,7 +8,7 @@ def fetchData(event, context):
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table('NBAPlayerData')
         
-        players_df = leaguedashplayerstats.LeagueDashPlayerStats().get_data_frames()[0]
+        players_df = leaguedashplayerstats.LeagueDashPlayerStats(per_mode_detailed="PerGame").get_data_frames()[0]
         players_df = players_df[['PLAYER_ID', 'PLAYER_NAME', 'TEAM_ABBREVIATION', 'AGE', 'GP', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'FG_PCT', 'FT_PCT', 'FG3_PCT']]
         players_df = players_df.applymap(lambda x: Decimal(str(x)) if isinstance(x, float) else x)
 

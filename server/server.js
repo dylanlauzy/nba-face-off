@@ -9,7 +9,7 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 const resolvers = {
   Query: {
-    getRandomPlayer: async () => {
+    getRandomPlayers: async (_, { count }) => {
       const params = {
         TableName: "NBAPlayerData",
         ProjetionExpression: "PLAYER_ID",
@@ -18,50 +18,58 @@ const resolvers = {
           ':value': 30
         }
       }
-
+    
       let players;
-
+    
       try {
         players = await dynamoDB.scan(params).promise();
       } catch (error) {
         console.error("DynamoDB error:", error);
         return null;
       }
-
-      const randomIndex = Math.floor(Math.random() * players.Items.length);
-
-      const getPlayerParams = {
-        TableName: "NBAPlayerData",
-        Key: {
-          PLAYER_ID: players.Items[randomIndex].PLAYER_ID
+    
+      let randomIndexes = new Set();
+      while(randomIndexes.size < count) {
+        randomIndexes.add(Math.floor(Math.random() * players.Items.length));
+      }
+    
+      let playerData = [];
+      for (let index of randomIndexes) {
+        const getPlayerParams = {
+          TableName: "NBAPlayerData",
+          Key: {
+            PLAYER_ID: players.Items[index].PLAYER_ID
+          }
+        }
+    
+        try {
+          let player = await dynamoDB.get(getPlayerParams).promise();
+          player = player.Item;
+          player = {
+            id: player.PLAYER_ID,
+            name: player.PLAYER_NAME,
+            age: player.AGE,
+            team: player.TEAM_ABBREVIATION,
+            games: player.GP ,
+            pts: player.PTS ,
+            reb: player.REB ,
+            ast: player.AST ,
+            stl: player.STL ,
+            blk: player.BLK ,
+            fgPct: player.FG_PCT ,
+            ftPct: player.FT_PCT ,
+            fg3Pct: player.FG3_PCT ,
+          }
+    
+          playerData.push(player);
+        } catch (error) {
+          console.error("DynamoDB error:", error);
+          return null;
         }
       }
-
-      try {
-        let player = await dynamoDB.get(getPlayerParams).promise();
-        player = player.Item;
-        player = {
-          id: player.PLAYER_ID,
-          name: player.PLAYER_NAME,
-          age: player.AGE,
-          team: player.TEAM_ABBREVIATION,
-          games: player.GP ,
-          pts: player.PTS ,
-          reb: player.REB ,
-          ast: player.AST ,
-          stl: player.STL ,
-          blk: player.BLK ,
-          fgPct: player.FG_PCT ,
-          ftPct: player.FT_PCT ,
-          fg3Pct: player.FG3_PCT ,
-        }
-
-        return player;
-      } catch (error) {
-        console.error("DynamoDB error:", error);
-        return null;
-      }
-    },
+    
+      return playerData;
+    }
   },
 };
 

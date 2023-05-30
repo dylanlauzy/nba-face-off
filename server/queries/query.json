@@ -12,5 +12,5 @@
   },
   "rawPath": "/",
   "routeKey": "/",
-  "body": "{\"operationName\": null, \"variables\": null, \"query\": \"{ getRandomPlayer { id name team age games } }\"}"
+  "body": "{\"operationName\": null, \"variables\": {\"count\": 2}, \"query\": \"query ($count: Int!) { getRandomPlayers(count: $count) { id name team age games pts reb } }\"}"
 }

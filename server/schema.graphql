@@ -2,18 +2,18 @@ type Player {
   id: ID!
   name: String!
   age: Int!
-  team: String
+  team: String!
   games: Int!
-  pts: Int
-  reb: Int
-  ast: Int!
-  stl: Int
-  blk: Int!
+  pts: Float!
+  reb: Float!
+  ast: Float!
+  stl: Float!
+  blk: Float!
   fgPct: Float!
   ftPct: Float!
   fg3Pct: Float!
 }
 
 type Query {
-  getRandomPlayer: Player
+  getRandomPlayers(count: Int!): [Player]
 }
