@@ -19,7 +19,7 @@ In NBA Face-Off, you go head-to-head in a card game that tests your NBA knowledg
 
 ## Local Development
 
-To get started developing locally, you will need the API URI (please contact the developer for this). follow these steps:
+To get started developing locally, you will need the API URI (please contact the developer for this), once retrieving the URI follow these steps:
 
 1. Clone this repo and `cd` into the directory:
 
