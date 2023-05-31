@@ -16,9 +16,38 @@ In NBA Face-Off, you go head-to-head in a card game that tests your NBA knowledg
 - API: GraphQL API was developed for querying randomized player statistics from DynamoDB using Apollo Server.
 - Multiplayer functionality [In development]: Compete against friends or foes across the globe.
 
-## Deployment
 
-The application is deployed to AWS Lambda using Serverless. Follow the [Serverless AWS deployment guide](https://www.serverless.com/framework/docs/providers/aws/guide/deploying/) for more details.
+## Local Development
+
+To get started developing locally, you will need the API URI (please contact the developer for this). follow these steps:
+
+1. Clone this repo and `cd` into the directory:
+
+    ```
+    git clone https://github.com/username/nba-face-off.git
+    cd nba-face-off
+    ```
+
+2. Install dependencies:
+
+    ```
+    npm install
+    ```
+
+3. Within the client folder, create a .env file with the variable REACT_APP_API_URI set to the apps URI:
+
+    ```env
+    REACT_APP_API_URI=<URI>
+    ```
+
+4. Run the local development server:
+
+    ```
+    cd client
+    npm start
+    ```
+
+The application should now be running on `localhost:3000`.
 
 ## Contributing
 
