@@ -12,7 +12,7 @@ const resolvers = {
     getRandomPlayers: async (_, { count }) => {
       const params = {
         TableName: "NBAPlayerData",
-        ProjetionExpression: "PLAYER_ID",
+        ProjectionExpression: "PLAYER_ID",
         FilterExpression: "GP >:value",
         ExpressionAttributeValues: {
           ':value': 30
@@ -25,7 +25,7 @@ const resolvers = {
         players = await dynamoDB.scan(params).promise();
       } catch (error) {
         console.error("DynamoDB error:", error);
-        return null;
+        throw new Error("Failed to get players from DynamoDB");
       }
     
       let randomIndexes = new Set();

@@ -4,3 +4,4 @@ packages-layer
 .jupyter
 bharis.png
 .env
+.ipynb_checkpoints
