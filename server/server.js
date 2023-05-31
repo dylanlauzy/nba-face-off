@@ -30,7 +30,11 @@ const resolvers = {
     
       let randomIndexes = new Set();
       while(randomIndexes.size < count) {
-        randomIndexes.add(Math.floor(Math.random() * players.Items.length));
+        let newIndex;
+        do {
+          newIndex = Math.floor(Math.random() * players.Items.length);
+        } while (randomIndexes.has(newIndex))
+        randomIndexes.add(newIndex);
       }
     
       let playerData = [];
