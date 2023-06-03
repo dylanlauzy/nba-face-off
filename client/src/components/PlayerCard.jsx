@@ -1,39 +1,48 @@
 import Stats from "./Stats"
+import { useState, useEffect } from "react";
 
 const teams = {
-  'ATL': 'to-ATL/90',
-  'BOS': 'to-BOS/90',
-  'CLE': 'to-CLE/90',
-  'MIA': 'to-MIA/90',
-  'OKC': 'to-OKC/90',
-  'GSW': 'to-GSW/90',
-  'HOU': 'to-HOU/90',
-  'BKN': 'to-BKN/90',
-  'CHA': 'to-CHA/90',
-  'CHI': 'to-CHI/90',
-  'DAL': 'to-DAL/90',
-  'DEN': 'to-DEN/90',
-  'DET': 'to-DET/90',
-  'IND': 'to-IND/90',
-  'LAC': 'to-LAC/90',
-  'LAL': 'to-LAL/90',
-  'MEM': 'to-MEM/90',
-  'MIL': 'to-MIL/90',
-  'MIN': 'to-MIN/90',
-  'NOP': 'to-NOP/90',
-  'NYK': 'to-NYK/90',
-  'ORL': 'to-ORL/90',
-  'PHI': 'to-PHI/90',
-  'PHX': 'to-PHX/90',
-  'POR': 'to-POR/90',
-  'SAC': 'to-SAC/90',
-  'SAS': 'to-SAS/90',
-  'TOR': 'to-TOR/90',
-  'UTA': 'to-UTA/90',
-  'WAS': 'to-WAS/90'
+  'ATL': 'to-ATL/95',
+  'BOS': 'to-BOS/95',
+  'CLE': 'to-CLE/95',
+  'MIA': 'to-MIA/95',
+  'OKC': 'to-OKC/95',
+  'GSW': 'to-GSW/95',
+  'HOU': 'to-HOU/95',
+  'BKN': 'to-BKN/95',
+  'CHA': 'to-CHA/95',
+  'CHI': 'to-CHI/95',
+  'DAL': 'to-DAL/95',
+  'DEN': 'to-DEN/95',
+  'DET': 'to-DET/95',
+  'IND': 'to-IND/95',
+  'LAC': 'to-LAC/95',
+  'LAL': 'to-LAL/95',
+  'MEM': 'to-MEM/95',
+  'MIL': 'to-MIL/95',
+  'MIN': 'to-MIN/95',
+  'NOP': 'to-NOP/95',
+  'NYK': 'to-NYK/95',
+  'ORL': 'to-ORL/95',
+  'PHI': 'to-PHI/95',
+  'PHX': 'to-PHX/95',
+  'POR': 'to-POR/95',
+  'SAC': 'to-SAC/95',
+  'SAS': 'to-SAS/95',
+  'TOR': 'to-TOR/95',
+  'UTA': 'to-UTA/95',
+  'WAS': 'to-WAS/95'
 }
 
 const PlayerCard = ( {player, isTurn} ) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  // pre-load image
+  useEffect(() => {
+    const img = new Image();
+    img.src = `https://cdn.nba.com/headshots/nba/latest/1040x760/${player.id}.png`;
+    img.onload = () => setImageLoaded(true);
+  }, [player]);
 
   const stats = {
     "Age": player.age,
@@ -45,6 +54,10 @@ const PlayerCard = ( {player, isTurn} ) => {
     "Field Goal %": player.fgPct,
     "Free Throw %": player.ftPct,
     "Three-Point %": player.fg3Pct,
+  }
+
+  if(!imageLoaded) {
+    return <div>Loading...</div>
   }
 
   return (

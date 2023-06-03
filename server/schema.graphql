@@ -1,4 +1,4 @@
-type Player {
+type NBAPlayer {
   id: ID!
   name: String!
   age: Int!
@@ -14,6 +14,29 @@ type Player {
   fg3Pct: Float!
 }
 
+type Player {
+  id: ID!
+  name: String!
+  cards: [NBAPlayer]
+}
+
+type Game {
+  id: ID!
+  creator: ID!
+  status: String!
+  currentTurn: ID!
+  players: [Player]
+}
+
 type Query {
-  getRandomPlayers(count: Int!): [Player]
+  getRandomPlayers(count: Int!): [NBAPlayer]
+  helloWorld: String!
+}
+
+type Mutation {
+  createGame(input: CreateGameInput!): Game
+}
+
+input CreateGameInput {
+  creatorId: ID!
 }
