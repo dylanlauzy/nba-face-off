@@ -2,7 +2,6 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone'
 import { startServerAndCreateLambdaHandler, handlers } from '@as-integrations/aws-lambda';
 import { readFileSync } from 'fs';
-// import AWS from '/vrsar/runtime/node_modules/aws-sdk/lib/aws.js';
 import { DynamoDBClient, ScanCommand, BatchGetItemCommand  } from '@aws-sdk/client-dynamodb';
 
 const typeDefs = readFileSync(new URL('./schema.graphql', import.meta.url)).toString('utf-8');
@@ -105,6 +104,5 @@ console.log(`server started at: ${url}`)
 
 // export const graphqlHandler = startServerAndCreateLambdaHandler(
 //   server,
-//   // We will be using the Proxy V2 handler
 //   handlers.createAPIGatewayProxyEventV2RequestHandler(),
 // );
