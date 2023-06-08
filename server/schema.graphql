@@ -39,6 +39,7 @@ type Mutation {
   createGame(name: String): Game
   joinGame(gameId: ID!, player: PlayerInput): Game
   removeFromGame(gameId: ID!, playerId: ID!): Game
+  generateCards(gameId: ID!): Game
 }
 
 input PlayerInput {
