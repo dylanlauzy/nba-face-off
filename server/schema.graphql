@@ -22,10 +22,12 @@ type Player {
 
 type Game {
   id: ID!
-  creator: ID!
+  name: String!
+  creator: ID
   status: String!
-  currentTurn: ID!
+  currentTurn: ID
   players: [Player]
+  deleteAt: Int
 }
 
 type Query {
@@ -34,9 +36,28 @@ type Query {
 }
 
 type Mutation {
-  createGame(input: CreateGameInput!): Game
+  createGame(name: String): Game
+  joinGame(gameId: ID!, player: PlayerInput): Game
+  removeFromGame(gameId: ID!, playerId: ID!): Game
 }
 
-input CreateGameInput {
-  creatorId: ID!
+input PlayerInput {
+  id: ID!
+  name: String!
+}
+
+input CardInput {
+  id: ID!
+  name: String!
+  age: Int!
+  team: String!
+  games: Int!
+  pts: Float!
+  reb: Float!
+  ast: Float!
+  stl: Float!
+  blk: Float!
+  fgPct: Float!
+  ftPct: Float!
+  fg3Pct: Float!
 }

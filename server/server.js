@@ -2,10 +2,27 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone'
 import { startServerAndCreateLambdaHandler, handlers } from '@as-integrations/aws-lambda';
 import { readFileSync } from 'fs';
-import { DynamoDBClient, ScanCommand, BatchGetItemCommand  } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, GetItemCommand, ScanCommand,  BatchGetItemCommand, PutItemCommand, UpdateItemCommand  } from '@aws-sdk/client-dynamodb';
+import { v4 as uuidv4 } from 'uuid';
 
 const typeDefs = readFileSync(new URL('./schema.graphql', import.meta.url)).toString('utf-8');
 const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
+
+function convertDynamoDBResponse(data) {
+  const result = {};
+
+  for (const key in data) {
+    if (data[key].hasOwnProperty('S')) {
+      result[key] = data[key]['S'];
+    } else if (data[key].hasOwnProperty('L')) {
+      result[key] = data[key]['L'].map(convertDynamoDBResponse);
+    } else if (data[key].hasOwnProperty('M')) {
+      result[key] = convertDynamoDBResponse(data[key]['M']);
+    }
+  }
+
+  return result;
+}
 
 const resolvers = {
   Query: {
@@ -82,7 +99,93 @@ const resolvers = {
   },
 
   Mutation: {
+    createGame: async (_, { name }) => {
+      const newItem = {
+        id: {S: uuidv4()},
+        name: {S: name ? name: "New Game" },
+        status: {S: "Waiting"},
+        deleteAt: {S: String(Math.floor((Date.now() / 1000) + (60*60*24)))} // time for AWS in seconds - delete in a day
+      }
 
+      const params = {
+        Item: newItem,
+        TableName: "NBA-face-off-games",
+      }
+
+      try {
+        const command = new PutItemCommand(params);
+        const response = await dynamoDB.send(command);
+        return {
+          id: newItem.id.S,
+          name: newItem.name.S,
+          status: newItem.status.S,
+          deleteAt: newItem.deleteAt.S
+        };
+      } catch (error) {
+        console.error("DynamoDB error:", error)
+        return null;
+      }
+    },
+    joinGame: async(_, { gameId, player}) => {
+      const updateParams = {
+        Key: { id: { S: gameId }},
+        TableName: "NBA-face-off-games",
+        ConditionExpression: "attribute_not_exists(players) OR size(players) < :maxSize",
+        UpdateExpression: "SET players = list_append(if_not_exists(players, :emptyList), :newPlayer)",
+        ExpressionAttributeValues: {
+          ":maxSize": { N: "2" },
+          ":emptyList": { L: []},
+          ":newPlayer": {L: [{
+            M: {
+              id: { S: player.id },
+              name: { S: player.name },
+              cards: {L: [] }
+            }
+          }]},
+        },
+        ReturnValues: "ALL_NEW",
+      }
+
+      try {
+        const command = new UpdateItemCommand(updateParams);
+        const response = await dynamoDB.send(command);
+        return convertDynamoDBResponse(response.Attributes);
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+    },
+
+    removeFromGame: async(_, { gameId, playerId }) => {
+      const getParams = {
+        TableName: "NBA-face-off-games",
+        Key: { id: { S: gameId } },
+        ProjectionExpression: "players",
+      }
+
+      try {
+        const getCommand = new GetItemCommand(getParams);
+        const response = await dynamoDB.send(getCommand);
+        const updatedPlayers = response.Item.players.L.filter(player => player.M.id.S != playerId);
+        
+        const updateParams = {
+          Key: { id: { S: gameId }},
+          TableName: "NBA-face-off-games",
+          UpdateExpression: "SET players = :updated",
+          ExpressionAttributeValues: {
+            ":updated": { L: updatedPlayers },
+          },
+          ReturnValues: "ALL_NEW",
+        }
+
+        const updateCommand = new UpdateItemCommand(updateParams);
+        const updateResponse = await dynamoDB.send(updateCommand);
+        return convertDynamoDBResponse(updateResponse.Attributes);
+      } catch(error) {
+        console.error(error);
+        return null;
+      }
+    }
   }
 };
 

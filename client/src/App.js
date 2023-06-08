@@ -1,7 +1,8 @@
 import { ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import Players from './components/Players';
 
-const API_URI = process.env.REACT_APP_API_URI;
+// const API_URI = process.env.REACT_APP_API_URI;
+const API_URI = "http://localhost:4000/";
 console.log(API_URI)
 
 const client = new ApolloClient({
