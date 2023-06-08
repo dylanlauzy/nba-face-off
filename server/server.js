@@ -3,26 +3,11 @@ import { startStandaloneServer } from '@apollo/server/standalone'
 import { startServerAndCreateLambdaHandler, handlers } from '@as-integrations/aws-lambda';
 import { readFileSync } from 'fs';
 import { DynamoDBClient, GetItemCommand, ScanCommand,  BatchGetItemCommand, PutItemCommand, UpdateItemCommand  } from '@aws-sdk/client-dynamodb';
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 
 const typeDefs = readFileSync(new URL('./schema.graphql', import.meta.url)).toString('utf-8');
 const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
-
-function convertDynamoDBResponse(data) {
-  const result = {};
-
-  for (const key in data) {
-    if (data[key].hasOwnProperty('S')) {
-      result[key] = data[key]['S'];
-    } else if (data[key].hasOwnProperty('L')) {
-      result[key] = data[key]['L'].map(convertDynamoDBResponse);
-    } else if (data[key].hasOwnProperty('M')) {
-      result[key] = convertDynamoDBResponse(data[key]['M']);
-    }
-  }
-
-  return result;
-}
 
 const resolvers = {
   Query: {
@@ -73,6 +58,8 @@ const resolvers = {
         const command = new BatchGetItemCommand(getPlayerParams);
         const response = await dynamoDB.send(command);
 
+        console.log(response);
+
         playerData = response.Responses.NBAPlayerData.map((player) => ({
           id: player.PLAYER_ID.N,
           name: player.PLAYER_NAME.S,
@@ -101,26 +88,21 @@ const resolvers = {
   Mutation: {
     createGame: async (_, { name }) => {
       const newItem = {
-        id: {S: uuidv4()},
-        name: {S: name ? name: "New Game" },
-        status: {S: "Waiting"},
-        deleteAt: {S: String(Math.floor((Date.now() / 1000) + (60*60*24)))} // time for AWS in seconds - delete in a day
+        id: uuidv4(),
+        name: name ? name: "New Game" ,
+        status: "Waiting",
+        deleteAt: String(Math.floor((Date.now() / 1000) + (60*60*24))) // time for AWS in seconds - delete in a day
       }
 
       const params = {
-        Item: newItem,
+        Item: marshall(newItem),
         TableName: "NBA-face-off-games",
       }
 
       try {
         const command = new PutItemCommand(params);
         const response = await dynamoDB.send(command);
-        return {
-          id: newItem.id.S,
-          name: newItem.name.S,
-          status: newItem.status.S,
-          deleteAt: newItem.deleteAt.S
-        };
+        return newItem;
       } catch (error) {
         console.error("DynamoDB error:", error)
         return null;
@@ -149,7 +131,9 @@ const resolvers = {
       try {
         const command = new UpdateItemCommand(updateParams);
         const response = await dynamoDB.send(command);
-        return convertDynamoDBResponse(response.Attributes);
+        console.log(response.Attributes.players.L[0]);
+        console.log(unmarshall(response.Attributes));
+        return unmarshall(response.Attributes);
       } catch (error) {
         console.error(error);
         return null;
@@ -180,7 +164,7 @@ const resolvers = {
 
         const updateCommand = new UpdateItemCommand(updateParams);
         const updateResponse = await dynamoDB.send(updateCommand);
-        return convertDynamoDBResponse(updateResponse.Attributes);
+        return unmarshall(updateResponse.Attributes);
       } catch(error) {
         console.error(error);
         return null;
