@@ -74,7 +74,7 @@ const Players = () => {
   if (error) return <p>Error :(</p>;
 
   return (
-    <div className="flex h-screen bg-hero bg-cover">
+    <div className="flex h-screen bg-hero">
       <PlayerCard player={p1.cards[0]} isTurn={p1.isTurn}/>
       <PlayerCard player={p2.cards[0]} isTurn={p2.isTurn}/>
     </div>

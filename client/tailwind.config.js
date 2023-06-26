@@ -12,9 +12,9 @@ module.exports = {
       spacing: {
         '128': '36rem'
       },
-      backgroundImage: {
-        'hero': "url('assets/background.jpeg')",
-      },
+      // backgroundImage: {
+      //   'hero': "url('assets/background.jpeg')",
+      // },
       colors: {
         'ATL': '#e03a3e',
         'BOS': '#008348',
@@ -49,6 +49,8 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms')
+  ],
 }
 
