@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
+import { createBrowserRouter, RouterProvider, Routes, Route } from 'react-router-dom';
+import { ApolloClient, InMemoryCache, ApolloProvider, gql} from '@apollo/client';
 import CreateGame from './pages/CreateGame';
 import Lobby from './pages/Lobby';
 import Game from './pages/Game';
@@ -14,20 +14,40 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+const GET_GAME = gql`
+  query GetGameState($gameId: ID!) {
+    getGameState(gameId: $gameId) {
+      id
+      name
+      players {
+        id
+        name
+      }
+    }
+  }
+`
+
+// Router
+const router = createBrowserRouter([
+  { path: "/", Component: Players },
+  { path: "/create-game", Component: CreateGame },
+  { 
+    path: "/lobby/:id",
+    Component: Lobby,
+    loader: async ({ params }) => {
+      const { data } = await client.query({ query: GET_GAME, variables: { gameId: params.id } })
+      return data.getGameState;
+    }
+  },
+  { path: "/game/:id", Component: Game }
+])
+
 function App() {
   return (
     <ApolloProvider client={client}>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Players />} />
-          <Route path="/create-game" element={<CreateGame />} />
-          <Route path="/lobby/:id" element={<Lobby />} />
-          <Route path="/game/:id" element={<Game />} />
-        </Routes>
-      </Router>
+      <RouterProvider router={router}/>
     </ApolloProvider>
   );
 }
-
 
 export default App;

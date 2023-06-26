@@ -32,18 +32,18 @@ type Game {
 
 type Query {
   getRandomPlayers(count: Int!): [NBAPlayer]
-  helloWorld: String!
+  getGameState(gameId: ID!): Game
 }
 
 type Mutation {
-  createGame(name: String): Game
+  createGame(name: String, player: PlayerInput!): Game
   joinGame(gameId: ID!, player: PlayerInput): Game
   removeFromGame(gameId: ID!, playerId: ID!): Game
   generateCards(gameId: ID!): Game
 }
 
 input PlayerInput {
-  id: ID!
+  id: ID
   name: String!
 }
 

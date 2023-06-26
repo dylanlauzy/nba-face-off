@@ -82,15 +82,41 @@ const getRandomPlayers = async (count) => {
 const resolvers = {
   Query: {
     getRandomPlayers: async (_, { count }) => getRandomPlayers(count),
+    getGameState: async (_, { gameId }) => {
+      const input = {
+        TableName: "NBA-face-off-games",
+        Key: {id: {S: gameId}},
+        ProjectionExpression: "id, #N, players, #S",
+        ExpressionAttributeNames: {
+          "#N": "name",
+          "#S": "status"
+        }
+      }
+      
+      try {
+        const command = new GetItemCommand(input);
+        const response = await dynamoDB.send(command);
+        return unmarshall(response.Item);
+      } catch (error) {
+        console.error("DynamoDB error:", error);
+        return null;
+      }
+
+    }
   },
 
   Mutation: {
-    createGame: async (_, { name }) => {
+    createGame: async (_, { name, player }) => {
       const newItem = {
         id: uuidv4(),
         name: name ? name: "New Game" ,
         status: "Waiting",
-        deleteAt: String(Math.floor((Date.now() / 1000) + (60*60*24))) // time for AWS in seconds - delete in a day
+        deleteAt: Math.floor((Date.now() / 1000) + (60*60*24)), // time for AWS in seconds - delete in a day
+        players: [{
+          id: player.id ? player.id : "1",
+          name: player.name,
+          cards: []
+        }]
       }
 
       const params = {
@@ -136,7 +162,6 @@ const resolvers = {
         return null;
       }
     },
-
     removeFromGame: async(_, { gameId, playerId }) => {
       try {
         const getParams = {
@@ -167,7 +192,6 @@ const resolvers = {
         return null;
       }
     },
-
     generateCards: async (_, { gameId }) => {
       try {
         const getParams = {
