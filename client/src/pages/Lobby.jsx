@@ -1,5 +1,7 @@
 import { useLoaderData } from "react-router-dom"
 import { useState } from "react";
+import LobbyCard from "../components/LobbyCard";
+import JoinLobbyCard from "../components/JoinLobbyCard";
 
 const teams = {
   'ATL': 'to-ATL/95',
@@ -37,7 +39,7 @@ const teams = {
 const Lobby = () => {
   const data = useLoaderData();
   console.log(data);
-  
+
   const [player, setPlayer] = useState({
     team: Object.keys(teams)[ Object.keys(teams).length * Math.random() << 0]
   });
@@ -59,19 +61,9 @@ const Lobby = () => {
         <div className="font-bold text-4xl text-center font-primary my-px">{data.name}</div>
         <div className="w-full h-1 bg-blue-800"></div>
         <div className="flex items-center gap-x-5 py-6 px-10">
-          <div className={`bg-gradient-to-br from-slate-100 ${teams[player.team]} w-72 rounded-3xl border-solid border-4 border-white flex flex-col p-4 gap-y-2`}>
-            <div className="flex items-center gap-x-1">
-              <img alt={`team logo: ${player.team}`} src={require(`../assets/${player.team}.png`)} className="w-10 h-10"></img>
-              <div className="font-bold font-primary text-xl flex-auto text-center overflow-hidden">{data.players[0].name}</div>
-            </div>
-          </div>
+          <LobbyCard team={player.team} name={data.players[0].name}/>
           <img alt="graphic for word 'vs'" src={require('../assets/vs.png')} className="h-12 w-12"></img>
-          <div className={`bg-gradient-to-br from-slate-100 ${teams[player.team]} w-72 rounded-3xl border-solid border-4 border-white flex flex-col p-4 gap-y-2`}>
-            <div className="flex items-center gap-x-1">
-              <img alt={`team logo: ${player.team}`} src={require(`../assets/${player.team}.png`)} className="w-10 h-10"></img>
-              <div className="font-bold font-primary text-xl flex-auto text-center overflow-hidden">{data.players[0].name}</div>
-            </div>
-          </div>
+          {data.players[1] ? <LobbyCard team={player.team} name={data.players[1].name}/> : <JoinLobbyCard />}
         </div>
         <div className="flex gap-x-2 w-full">
           <div onClick={copyURL} className="flex-auto text-center font-secondary bg-white py-2 rounded-md shadow-inner shadow-gray-300 hover:cursor-pointer">{window.location.href}</div>
