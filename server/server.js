@@ -99,9 +99,8 @@ const resolvers = {
         return unmarshall(response.Item);
       } catch (error) {
         console.error("DynamoDB error:", error);
-        return null;
+        return { status: 404, error };
       }
-
     }
   },
 
