@@ -9,6 +9,11 @@ import { v4 as uuidv4 } from 'uuid';
 const typeDefs = readFileSync(new URL('./schema.graphql', import.meta.url)).toString('utf-8');
 const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
 
+const teams =['ATL', 'BOS', 'CLE','MIA','OKC','GSW','HOU','BKN','CHA','CHI','DAL','DEN','DET','IND','LAC','LAL','MEM','MIL','MIN','NOP','NYK','ORL','PHI','PHX','POR','SAC','SAS','TOR','UTA','WAS']
+const randomTeam = () => {
+  return teams[teams.length * Math.random() << 0]
+}
+
 const getRandomPlayers = async (count) => {
   const params = {
     TableName: "NBAPlayerData",
@@ -114,6 +119,7 @@ const resolvers = {
         players: [{
           id: player.id ? player.id : "1",
           name: player.name,
+          team: player.team ? player.team : randomTeam(),
           cards: []
         }]
       }
@@ -143,8 +149,9 @@ const resolvers = {
           ":emptyList": { L: []},
           ":newPlayer": {L: [{
             M: {
-              id: { S: player.id },
+              id: player.id ? { S: player.id } : { S: "2"},
               name: { S: player.name },
+              team: player.team ? { S: player.team } : { S: randomTeam() },
               cards: {L: [] }
             }
           }]},
@@ -205,16 +212,10 @@ const resolvers = {
         const getCommand = new GetItemCommand(getParams);
         const response = await dynamoDB.send(getCommand);
 
-        const status = response.Item.status.S;
-        if(status != "Waiting") throw new Error("Waiting for players");
-        
-        let players = response.Item.players.L;
-        if(players.length != 2) throw new Error("Not enough players");
-
         players[0].M.cards.L = [];
         players[1].M.cards.L = [];
 
-        const cards = await getRandomPlayers(30);
+        const cards = await getRandomPlayers(12);
 
         for(let i = 0; i < cards.length; i++) {
           if(i % 2 == 0) {

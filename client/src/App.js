@@ -23,6 +23,7 @@ const GET_GAME = gql`
       players {
         id
         name
+        team
       }
     }
   }

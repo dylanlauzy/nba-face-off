@@ -11,6 +11,7 @@ const CREATE_GAME = gql`
       players {
         id
         name
+        team
       }
     }
   }
@@ -21,7 +22,7 @@ const CreateGame = () => {
   const navigate = useNavigate();
   const [createGame, { data, loading, error }] = useMutation(CREATE_GAME);
   const [playerName, setPlayerName] = useState("");
-  const [gameName, setGameName] = useState("");
+  const [gameName, setGameName] = useState("New Lobby");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,7 +44,7 @@ const CreateGame = () => {
           </div>
           <div>
             <label for="lobby" className="block font-bold text-gray-500">Lobby Name</label>
-            <input type="text" id="lobby" placeholder="New Lobby" className="w-full rounded-md" value={gameName} onChange={(e) => {setGameName(e.target.value)}}/>
+            <input type="text" id="lobby" className="w-full rounded-md" value={gameName} onChange={(e) => {setGameName(e.target.value)}}/>
           </div>
           <input type="submit" value="Create Game" className="h-10 rounded-md bg-blue-700 text-white font-bold hover:cursor-pointer hover:bg-blue-800 focus:outline-none focus:ring focus:ring-blue-300"/>
         </form>

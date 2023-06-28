@@ -16,6 +16,7 @@ type NBAPlayer {
 
 type Player {
   id: ID!
+  team: String!
   name: String!
   cards: [NBAPlayer]
 }

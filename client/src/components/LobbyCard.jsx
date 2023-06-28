@@ -34,7 +34,7 @@ const teams = {
 const LobbyCard = ({ team, name }) => {
   return (
     <div className={`bg-gradient-to-br from-slate-100 ${teams[team]} w-72 h-20 rounded-3xl border-solid border-4 border-white flex flex-col px-4 py-2 gap-y-2`}>
-      <div className="flex items-center gap-x-1 m-auto">
+      <div className="flex items-center gap-x-5 m-auto">
         <img alt={`team logo: ${team}`} src={require(`../assets/${team}.png`)} className="w-10 h-10"></img>
         <div className="font-bold font-primary text-xl flex-auto text-center overflow-hidden">{name}</div>
       </div>
