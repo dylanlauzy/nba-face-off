@@ -1,6 +1,15 @@
-import { useLoaderData } from "react-router-dom"
+import { useLoaderData, useNavigate } from "react-router-dom";
 import LobbyCard from "../components/LobbyCard";
 import JoinLobbyCard from "../components/JoinLobbyCard";
+import { gql, useMutation } from "@apollo/client";
+
+const START_GAME = gql`
+  mutation StartGame($gameId: ID!) {
+    startGame(gameId: $gameId) {
+      status
+    }
+  }
+`
 
 const Lobby = () => {
   // load data from route loader
@@ -19,6 +28,20 @@ const Lobby = () => {
       });
   };
 
+  // start game
+  const [startGame, { data, loading, error}] = useMutation(START_GAME, { variables: { gameId: gameState.id }})
+  const navigate = useNavigate();
+  const handleStart = async () => {
+    if(gameState.players.length < 2) throw new Error("Waiting for players");
+
+    const res = await startGame();
+    const data = res.data.startGame
+    console.log(data)
+    if(data.status == 404) throw new Error("Game already started");
+
+    navigate(`/game/${gameState.id}`)
+  }
+
   return (
     <div className="flex h-screen bg-hero bg-cover">
       <div className="flex flex-col items-center m-auto py-7 px-8 gap-y-3 rounded-3xl bg-white/95">
@@ -33,7 +56,7 @@ const Lobby = () => {
           <div onClick={copyURL} className="flex-auto text-center font-secondary bg-white py-2 rounded-md shadow-inner shadow-gray-300 hover:cursor-pointer active:bg-gray-100 select-none">{window.location.href}</div>
           <button onClick={copyURL}className="h-10 px-6 rounded-xl bg-green-700 text-white font-bold hover:cursor-pointer hover:bg-green-800 active:ring active:ring-green-300">Copy</button>
         </div>
-        <button className="w-full h-10 rounded-xl bg-blue-800 text-white font-bold hover:cursor-pointer hover:bg-blue-900 focus:outline-none active:ring active:ring-blue-300">Start Game</button>
+        <button onClick={handleStart} className="w-full h-10 rounded-xl bg-blue-800 text-white font-bold hover:cursor-pointer hover:bg-blue-900 focus:outline-none active:ring active:ring-blue-300">Start Game</button>
       </div>
     </div>
   )

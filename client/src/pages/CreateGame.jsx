@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, gql } from '@apollo/client'
-import { handleError } from '@apollo/client/link/http/parseAndCheckHttpResponse';
+import { useMutation, gql } from '@apollo/client'
 
 const CREATE_GAME = gql`
   mutation CreateGame($name: String, $player: PlayerInput!) {

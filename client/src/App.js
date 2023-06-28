@@ -20,6 +20,7 @@ const GET_GAME = gql`
     getGameState(gameId: $gameId) {
       id
       name
+      status
       players {
         id
         name

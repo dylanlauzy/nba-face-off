@@ -198,7 +198,7 @@ const resolvers = {
         return null;
       }
     },
-    generateCards: async (_, { gameId }) => {
+    startGame: async (_, { gameId }) => {
       try {
         const getParams = {
           TableName: "NBA-face-off-games",
@@ -211,6 +211,12 @@ const resolvers = {
 
         const getCommand = new GetItemCommand(getParams);
         const response = await dynamoDB.send(getCommand);
+
+        const status = response.Item.status.S;
+        if(status != "Waiting") throw new Error("Game is not startable");
+
+        let players = response.Item.players.L;
+        if(players.length != 2) throw new Error("Not enough players");
 
         players[0].M.cards.L = [];
         players[1].M.cards.L = [];
@@ -228,9 +234,13 @@ const resolvers = {
         const updateParams = {
           Key: { id: { S: gameId }},
           TableName: "NBA-face-off-games",
-          UpdateExpression: "SET players = :updated",
+          UpdateExpression: "SET players = :players, #S = :status",
           ExpressionAttributeValues: {
-            ":updated": { L: players },
+            ":players": { L: players },
+            ":status": { S: "Active" }
+          },
+          ExpressionAttributeNames: {
+            "#S": "status"
           },
           ReturnValues: "ALL_NEW",
         }
@@ -240,7 +250,7 @@ const resolvers = {
         return unmarshall(updateResponse.Attributes);
       } catch(error) {
         console.error(error);
-        return null;
+        return { status: 404 };
       }
     }
   }
