@@ -43,6 +43,10 @@ type Mutation {
   startGame(gameId: ID!): Game
 }
 
+type Subscription {
+  getGameState(gameId: ID!): Game
+}
+
 input PlayerInput {
   id: ID
   name: String!

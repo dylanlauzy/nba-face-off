@@ -1,5 +1,9 @@
 import { createBrowserRouter, RouterProvider} from 'react-router-dom';
-import { ApolloClient, InMemoryCache, ApolloProvider, gql} from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, gql, split, HttpLink} from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+
 import CreateGame from './pages/CreateGame';
 import Lobby from './pages/Lobby';
 import Game from './pages/Game';
@@ -7,11 +11,31 @@ import Players from './components/Players';
 import ErrorPage from './pages/ErrorPage';
 
 // const API_URI = process.env.REACT_APP_API_URI;
-const API_URI = "http://localhost:4000/";
-console.log(API_URI)
+const API_URI = "http://localhost:4000/graphql";
+const SUBSCRIPTION_URL = "ws://localhost:4000/subscriptions";
+
+const httpLink = new HttpLink({
+  uri: API_URI
+})
+
+const wsLink = new GraphQLWsLink(createClient({
+  url: SUBSCRIPTION_URL
+}))
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  httpLink
+)
 
 const client = new ApolloClient({
-  uri: API_URI,
+  link: splitLink,
   cache: new InMemoryCache(),
 });
 
@@ -25,6 +49,21 @@ const GET_GAME = gql`
         id
         name
         team
+        cards {
+          id
+          name
+          age
+          team
+          games
+          pts
+          reb
+          ast
+          stl
+          blk
+          fgPct
+          ftPct
+          fg3Pct
+        }
       }
     }
   }
@@ -51,7 +90,23 @@ const router = createBrowserRouter([
     },
     errorElement: <ErrorPage />
   },
-  { path: "/game/:id", Component: Game }
+  { 
+    path:
+    "/game/:id",
+    Component: Game,
+    loader: async ({ params }) => {
+      try {
+        const { data } = await client.query({ query: GET_GAME, variables: { gameId: params.id } })
+
+        if (data.getGameState.status === "Waiting") throw new Error("Game hasn't started", { status: 404 });
+
+        return data.getGameState;
+      } catch(error) {
+        throw new Error("Error 404: game doesn't exist", { status: 404 });
+      }
+    },
+    errorElement: <ErrorPage />
+  }
 ])
 
 function App() {

@@ -24,6 +24,7 @@ const PopoverForm = ({ gameState }) => {
     e.preventDefault();
     const { data } = await joinGame({ variables: { gameId: gameState.id, player: { name: playerName } } });
     console.log(data);
+    localStorage.setItem('playerId', data.joinGame.players[1].id);
     revalidator.revalidate();
   }
 
