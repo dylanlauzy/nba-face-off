@@ -39,7 +39,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-const GET_GAME = gql`
+const GET_STATE_LOBBY = gql`
   query GetGameState($gameId: ID!) {
     getGameState(gameId: $gameId) {
       id
@@ -49,6 +49,22 @@ const GET_GAME = gql`
         id
         name
         team
+      }
+    }
+  }
+`
+
+const GET_STATE_GAME = gql`
+  query GetGameState($gameId: ID!) {
+    getGameState(gameId: $gameId) {
+      id
+      name
+      status
+      players {
+        id
+        name
+        team
+        cardsLeft
         cards {
           id
           name
@@ -73,7 +89,7 @@ const GET_GAME = gql`
 const router = createBrowserRouter([
   { 
     path: "/",
-    Component: Players,
+    Component: CreateGame,
     errorElement: <ErrorPage />
   },
   { path: "/create-game", Component: CreateGame },
@@ -82,7 +98,7 @@ const router = createBrowserRouter([
     Component: Lobby,
     loader: async ({ params }) => {
       try {
-        const { data } = await client.query({ query: GET_GAME, variables: { gameId: params.id } })
+        const { data } = await client.query({ query: GET_STATE_LOBBY, variables: { gameId: params.id } })
         return data.getGameState;
       } catch(error) {
         throw new Error("Error 404: lobby doesn't exist", { status: 404 });
@@ -96,7 +112,7 @@ const router = createBrowserRouter([
     Component: Game,
     loader: async ({ params }) => {
       try {
-        const { data } = await client.query({ query: GET_GAME, variables: { gameId: params.id } })
+        const { data } = await client.query({ query: GET_STATE_GAME, variables: { gameId: params.id } })
 
         if (data.getGameState.status === "Waiting") throw new Error("Game hasn't started", { status: 404 });
 

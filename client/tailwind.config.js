@@ -12,6 +12,9 @@ module.exports = {
       spacing: {
         '128': '36rem'
       },
+      backgroundImage: {
+        'card-back': "url('assets/card_back.png')"
+      },
       // backgroundImage: {
       //   'hero': "url('assets/background.jpeg')",
       // },

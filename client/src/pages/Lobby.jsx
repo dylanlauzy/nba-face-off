@@ -23,21 +23,6 @@ const GAME_STATE_SUBSCRIPTION = gql`
         id
         name
         team
-        cards {
-          id
-          name
-          age
-          team
-          games
-          pts
-          reb
-          ast
-          stl
-          blk
-          fgPct
-          ftPct
-          fg3Pct
-        }
       }
     }
   }
@@ -60,7 +45,7 @@ const Lobby = () => {
 
   };
   
-  if(gameState.status === "Active") {
+  if(gameState.status !== "Waiting") {
     navigate(`/game/${gameState.id}`);
   }
 

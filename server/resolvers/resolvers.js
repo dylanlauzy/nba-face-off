@@ -210,6 +210,8 @@ const resolvers = {
           }
         }
 
+        const CARDS_EACH = 12;
+
         const getCommand = new GetItemCommand(getParams);
         const response = await dynamoDB.send(getCommand);
 
@@ -220,9 +222,11 @@ const resolvers = {
         if(players.length != 2) throw new Error("Not enough players");
 
         players[0].M.cards.L = [];
+        players[0].M.cardsLeft = convertToAttr(CARDS_EACH / 2);
         players[1].M.cards.L = [];
+        players[1].M.cardsLeft = convertToAttr(CARDS_EACH / 2);
 
-        const cards = await getRandomPlayers(12);
+        const cards = await getRandomPlayers(CARDS_EACH);
 
         for(let i = 0; i < cards.length; i++) {
           if(i % 2 == 0) {

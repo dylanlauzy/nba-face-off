@@ -1,3 +1,8 @@
+enum Status {
+  Waiting
+  Active
+}
+
 type NBAPlayer {
   id: ID!
   name: String!
@@ -19,6 +24,7 @@ type Player {
   team: String!
   name: String!
   cards: [NBAPlayer]
+  cardsLeft: Int
 }
 
 type Game {
@@ -26,7 +32,7 @@ type Game {
   name: String!
   creator: ID
   status: String!
-  currentTurn: ID
+  turn: ID
   players: [Player]
   deleteAt: Int
 }
@@ -41,10 +47,13 @@ type Mutation {
   joinGame(gameId: ID!, player: PlayerInput): Game
   removeFromGame(gameId: ID!, playerId: ID!): Game
   startGame(gameId: ID!): Game
+  chooseStat(gameId: ID!, playerId: ID!, cardId: ID!): Game
+  
 }
 
 type Subscription {
-  getGameState(gameId: ID!): Game
+  getGameState(gameId: ID!, userId: ID): Game
+  statChosen(gameId: ID!): Game
 }
 
 input PlayerInput {
