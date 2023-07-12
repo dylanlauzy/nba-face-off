@@ -64,7 +64,7 @@ const PlayerCard = ( {player, isTurn, hidden} ) => {
     <div className={`flip-card ${hidden ? "" : "flipped"} w-80 h-128`}>
       <div className="flip-card-inner">
         <div className="flip-card-front">
-          <div className="m-auto bg-bharis w-80 h-128 rounded-3xl border-solid border-4 border-white flex flex-col gap-y-2"></div>
+          <div className="m-auto bg-card-back bg-cover bg-center w-80 h-128 rounded-3xl border-solid border-4 border-white flex flex-col gap-y-2"></div>
         </div>
         <div className="flip-card-back">
         <div className={`m-auto bg-gradient-to-br from-slate-100 ${teams[player.team]} w-80 h-128 rounded-3xl border-solid border-4 border-white flex flex-col p-6 gap-y-2`}>

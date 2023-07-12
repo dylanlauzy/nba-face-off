@@ -6,10 +6,24 @@ import { v4 as uuidv4 } from 'uuid';
 const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
 const pubsub = new PubSub();
 
-const teams =['ATL', 'BOS', 'CLE','MIA','OKC','GSW','HOU','BKN','CHA','CHI','DAL','DEN','DET','IND','LAC','LAL','MEM','MIL','MIN','NOP','NYK','ORL','PHI','PHX','POR','SAC','SAS','TOR','UTA','WAS']
+const TEAMS =['ATL', 'BOS', 'CLE','MIA','OKC','GSW','HOU','BKN','CHA','CHI','DAL','DEN','DET','IND','LAC','LAL','MEM','MIL','MIN','NOP','NYK','ORL','PHI','PHX','POR','SAC','SAS','TOR','UTA','WAS']
+
+const STATS_BIG = {
+  age: true,
+  games: true,
+  pts: true,
+  reb: true,
+  ast: true,
+  stl: true,
+  blk: true,
+  fgPct: true,
+  ftPct: true,
+  fg3Pct: true,
+}
+
 
 const randomTeam = () => {
-  return teams[teams.length * Math.random() << 0]
+  return TEAMS[TEAMS.length * Math.random() << 0]
 }
 
 const getRandomPlayers = async (count) => {
@@ -82,27 +96,36 @@ const getRandomPlayers = async (count) => {
   return playerData;
 }
 
+const fetchGameState = async(gameId) => {
+  const input = {
+    TableName: "NBA-face-off-games",
+    Key: {id: {S: gameId}},
+    ProjectionExpression: "id, #N, players, #S, winner",
+    ExpressionAttributeNames: {
+      "#N": "name",
+      "#S": "status"
+    }
+  }
+
+  const command = new GetItemCommand(input);
+
+  try {
+    const response = await dynamoDB.send(command);
+    return unmarshall(response.Item);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 const resolvers = {
   Query: {
     getRandomPlayers: async (_, { count }) => getRandomPlayers(count),
     getGameState: async (_, { gameId }) => {
-      const input = {
-        TableName: "NBA-face-off-games",
-        Key: {id: {S: gameId}},
-        ProjectionExpression: "id, #N, players, #S",
-        ExpressionAttributeNames: {
-          "#N": "name",
-          "#S": "status"
-        }
-      }
-      
       try {
-        const command = new GetItemCommand(input);
-        const response = await dynamoDB.send(command);
-        return unmarshall(response.Item);
-      } catch (error) {
+        return fetchGameState(gameId);
+      } catch(error) {
         console.error("DynamoDB error:", error);
-        return { status: 404, error };
+        return { status: 404, error }
       }
     }
   },
@@ -119,7 +142,8 @@ const resolvers = {
           name: player.name,
           team: player.team ? player.team : randomTeam(),
           cards: []
-        }]
+        }],
+        winner: ""
       }
 
       const params = {
@@ -260,8 +284,93 @@ const resolvers = {
         return { status: 404 };
       }
     },
-    chooseStat: async (_ , { gameId, playerId, stat }) => {
+    chooseStat: async (_ , { gameId, userId, stat }) => {
+      if (!STATS_BIG.hasOwnProperty(stat)) {
+        // invalid stat
+        console.error("invalid stat at chooseStat")
+        return;
+      }
+
+      let gameState;
+
+      try {
+        gameState = await fetchGameState(gameId);
+      } catch (error) {
+        // invalid gameId
+        console.error("DynamoDB error at chooseStat: ", error);
+        return { status: 404, error }
+      }
+
+      let oppIndex = gameState.players.findIndex(player => player.id !==  userId)
+      let userIndex = gameState.players.findIndex(player => player.id === userId)
+
+      if (userIndex == -1) {
+        // invalid userId
+        console.error("player not found at chooseStat");
+        return;
+      }
+
+      let userCard = gameState.players[userIndex].cards.shift();
+      let oppCard = gameState.players[oppIndex].cards.shift();
+
+      if(userCard[stat] == oppCard[stat]) {
+        // TEMP: put both cards at back
+        // TODO: impelement "add to pile" where pile builds up with both cards until someone wins
+        gameState.players[userIndex].cards.push(userCard);
+        gameState.players[oppIndex].cards.push(oppCard);
+      } else if (userCard[stat] > oppCard[stat] ^ STATS_BIG[stat]) {
+        // user loses (bigger stat for a small stat || smaller stat for a big stat)
+        gameState.players[oppIndex].cards.push(userCard);
+        gameState.players[oppIndex].cards.push(oppCard);
+
+        if(--gameState.players[userIndex].cardsLeft === 0) {
+          gameState.winner = gameState.players[oppIndex];
+          gameState.status = "Completed"
+        };
+
+        gameState.players[oppIndex].cardsLeft++;
+      } else {
+        // user wins
+        gameState.players[userIndex].cards.push(userCard);
+        gameState.players[userIndex].cards.push(oppCard);
+        
+        if(--gameState.players[oppIndex].cardsLeft === 0) {
+          gameState.winner = gameState.players[userIndex].id;
+          gameState.status = "Completed"
+        }
+
+        gameState.players[userIndex].cardsLeft++
+      }
+
+      const updateParams = {
+        Key: { id: { S: gameId }},
+        TableName: "NBA-face-off-games",
+        UpdateExpression: "SET players = :players, #S = :status, winner = :winner",
+        ExpressionAttributeValues: {
+          ":players": convertToAttr(gameState.players),
+          ":status": convertToAttr(gameState.status),
+          ":winner": gameState.winner ? convertToAttr(gameState.winner) : { S: "" }
+        },
+        ExpressionAttributeNames: {
+          "#S": "status"
+        },
+        ReturnValues: "ALL_NEW",
+      }
+
+      console.log(gameState);
+      console.log(gameState.players[userIndex].cards);
+
+      const updateCommand = new UpdateItemCommand(updateParams);
       
+      try {
+        const updateResponse = await dynamoDB.send(updateCommand);
+        const data = unmarshall(updateResponse.Attributes);
+        pubsub.publish("GAME_UPDATE", { getGameState: data });
+        return data;
+      } catch(error) {
+        console.error("DynamoDB error at chooseStat:", error)
+        return;
+      }
     }
   },
   Subscription: {

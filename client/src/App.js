@@ -7,12 +7,11 @@ import { createClient } from 'graphql-ws';
 import CreateGame from './pages/CreateGame';
 import Lobby from './pages/Lobby';
 import Game from './pages/Game';
-import Players from './components/Players';
 import ErrorPage from './pages/ErrorPage';
 
 // const API_URI = process.env.REACT_APP_API_URI;
 const API_URI = "http://localhost:4000/graphql";
-const SUBSCRIPTION_URL = "ws://localhost:4000/subscriptions";
+const SUBSCRIPTION_URL = "ws://localhost:4000/graphql";
 
 const httpLink = new HttpLink({
   uri: API_URI
