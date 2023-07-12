@@ -47,8 +47,7 @@ type Mutation {
   joinGame(gameId: ID!, player: PlayerInput): Game
   removeFromGame(gameId: ID!, playerId: ID!): Game
   startGame(gameId: ID!): Game
-  chooseStat(gameId: ID!, playerId: ID!, cardId: ID!): Game
-  
+  chooseStat(gameId: ID!, cardId: ID!, stat: String!): Game
 }
 
 type Subscription {

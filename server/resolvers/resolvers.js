@@ -259,6 +259,9 @@ const resolvers = {
         console.error(error);
         return { status: 404 };
       }
+    },
+    chooseStat: async (_ , { gameId, playerId, stat }) => {
+      
     }
   },
   Subscription: {
