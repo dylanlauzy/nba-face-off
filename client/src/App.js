@@ -60,6 +60,7 @@ const GET_STATE_GAME = gql`
       name
       status
       turn
+      winner
       players {
         id
         name
@@ -101,7 +102,8 @@ const router = createBrowserRouter([
         const { data } = await client.query({ query: GET_STATE_LOBBY, variables: { gameId: params.id } })
         return data.getGameState;
       } catch(error) {
-        throw new Error("Error 404: lobby doesn't exist", { status: 404 });
+        console.error(error)
+        throw new Error(`Error 404: ${error.message}`, { status: 404 });
       }
     },
     errorElement: <ErrorPage />
@@ -118,7 +120,8 @@ const router = createBrowserRouter([
 
         return data.getGameState;
       } catch(error) {
-        throw new Error("Error 404: game doesn't exist", { status: 404 });
+        console.error(error)
+        throw new Error(`Error 404: ${error.message}`, { status: 404 });
       }
     },
     errorElement: <ErrorPage />

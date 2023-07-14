@@ -30,7 +30,7 @@ const GAME_STATE_SUBSCRIPTION = gql`
 
 const Lobby = () => {
   // load data from route loader
-  const playerId = localStorage.getItem('playerId');
+  const userId = localStorage.getItem('userId');
   let gameState = useLoaderData();
   const navigate = useNavigate();
   
@@ -39,7 +39,7 @@ const Lobby = () => {
     { variables: { gameId: gameState.id  } }
   );
 
-  if (subscriptionData) {
+  if(subscriptionData) {
     console.log("new Data");
     gameState = subscriptionData.getGameState;
 
@@ -81,7 +81,7 @@ const Lobby = () => {
         <div className="flex items-center gap-x-5 py-6 px-10">
           <LobbyCard team={gameState.players[0].team} name={gameState.players[0].name}/>
           <img alt="graphic for word 'vs'" src={require('../assets/vs.png')} className="h-12 w-12"></img>
-          {gameState.players[1] ? <LobbyCard team={gameState.players[1].team} name={gameState.players[1].name}/> : playerId ? <WaitingLobbyCard /> : <JoinLobbyCard gameState={gameState}/>}
+          {gameState.players[1] ? <LobbyCard team={gameState.players[1].team} name={gameState.players[1].name}/> : userId ? <WaitingLobbyCard /> : <JoinLobbyCard gameState={gameState}/>}
         </div>
         <div className="flex gap-x-2 w-full">
           <div onClick={copyURL} className="flex-auto text-center font-secondary bg-white py-2 rounded-md shadow-inner shadow-gray-300 hover:cursor-pointer active:bg-gray-100 select-none">{window.location.href}</div>

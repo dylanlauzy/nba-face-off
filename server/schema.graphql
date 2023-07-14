@@ -47,7 +47,7 @@ type Query {
 type Mutation {
   createGame(name: String, player: PlayerInput!): Game
   joinGame(gameId: ID!, player: PlayerInput): Game
-  removeFromGame(gameId: ID!, playerId: ID!): Game
+  removeFromGame(gameId: ID!, userId: ID!): Game
   startGame(gameId: ID!): Game
   chooseStat(gameId: ID!, userId: ID!, stat: String!): Game
 }

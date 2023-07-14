@@ -100,7 +100,7 @@ const fetchGameState = async(gameId) => {
   const input = {
     TableName: "NBA-face-off-games",
     Key: {id: {S: gameId}},
-    ProjectionExpression: "id, #N, players, #S, winner",
+    ProjectionExpression: "id, #N, players, #S, winner, turn",
     ExpressionAttributeNames: {
       "#N": "name",
       "#S": "status"
@@ -142,7 +142,7 @@ const resolvers = {
           id: player.id ? player.id : "1",
           name: player.name,
           team: player.team ? player.team : randomTeam(),
-          cards: []
+          cards: [],
         }],
         winner: ""
       }
@@ -194,7 +194,7 @@ const resolvers = {
         return null;
       }
     },
-    removeFromGame: async(_, { gameId, playerId }) => {
+    removeFromGame: async(_, { gameId, userId }) => {
       try {
         const getParams = {
           TableName: "NBA-face-off-games",
@@ -204,7 +204,7 @@ const resolvers = {
 
         const getCommand = new GetItemCommand(getParams);
         const response = await dynamoDB.send(getCommand);
-        const updatedPlayers = response.Item.players.L.filter(player => player.M.id.S != playerId);
+        const updatedPlayers = response.Item.players.L.filter(player => player.M.id.S != userId);
         
         const updateParams = {
           Key: { id: { S: gameId }},
@@ -302,8 +302,8 @@ const resolvers = {
         return { status: 404, error }
       }
 
-      let oppIndex = gameState.players.findIndex(player => player.id !==  userId)
-      let userIndex = gameState.players.findIndex(player => player.id === userId)
+      const oppIndex = gameState.players.findIndex(player => player.id !==  userId)
+      const userIndex = gameState.players.findIndex(player => player.id === userId)
 
       if (userIndex == -1) {
         // invalid userId
@@ -311,27 +311,40 @@ const resolvers = {
         return;
       }
 
-      let userCard = gameState.players[userIndex].cards.shift();
-      let oppCard = gameState.players[oppIndex].cards.shift();
-
-      if(userCard[stat] == oppCard[stat]) {
+      const userCard = gameState.players[userIndex].cards.shift();
+      const oppCard = gameState.players[oppIndex].cards.shift()
+      
+      const userStat = parseFloat(userCard[stat]);
+      const oppStat = parseFloat(oppCard[stat]);
+      if(userStat == oppStat) {
         // TEMP: put both cards at back
         // TODO: impelement "add to pile" where pile builds up with both cards until someone wins
         gameState.players[userIndex].cards.push(userCard);
         gameState.players[oppIndex].cards.push(oppCard);
-      } else if (userCard[stat] > oppCard[stat] ^ STATS_BIG[stat]) {
+      } else if ((userStat > oppStat && !STATS_BIG[stat]) || (userStat < oppStat && STATS_BIG[stat])) {
         // user loses (bigger stat for a small stat || smaller stat for a big stat)
+        // console.log(`player ${userId} has lost after choosing ${stat}`)
+        // console.log(gameState.players[userIndex].id, ": ", userCard.name, userStat)
+        // console.log(gameState.players[oppIndex].id, ": ", oppCard.name, oppStat)
+
         gameState.players[oppIndex].cards.push(userCard);
         gameState.players[oppIndex].cards.push(oppCard);
 
         if(--gameState.players[userIndex].cardsLeft === 0) {
-          gameState.winner = gameState.players[oppIndex];
+          gameState.winner = gameState.players[oppIndex].id;
           gameState.status = "Completed"
         };
 
         gameState.players[oppIndex].cardsLeft++;
+        // console.log("---cards remaining---")
+        // console.log(gameState.players[userIndex].id, ": ", gameState.players[userIndex].cardsLeft)
+        // console.log(gameState.players[oppIndex].id, ": ", gameState.players[oppIndex].cardsLeft)
       } else {
         // user wins
+        // console.log(`player ${userId} has won after choosing ${stat}`)
+        // console.log(gameState.players[userIndex].id, ": ", userCard.name, userStat)
+        // console.log(gameState.players[oppIndex].id, ": ", oppCard.name, oppStat)
+
         gameState.players[userIndex].cards.push(userCard);
         gameState.players[userIndex].cards.push(oppCard);
         
@@ -346,20 +359,18 @@ const resolvers = {
       const updateParams = {
         Key: { id: { S: gameId }},
         TableName: "NBA-face-off-games",
-        UpdateExpression: "SET players = :players, #S = :status, winner = :winner",
+        UpdateExpression: "SET players = :players, #S = :status, winner = :winner, turn = :turn",
         ExpressionAttributeValues: {
           ":players": convertToAttr(gameState.players),
           ":status": convertToAttr(gameState.status),
-          ":winner": gameState.winner ? convertToAttr(gameState.winner) : { S: "" }
+          ":winner": gameState.winner ? convertToAttr(gameState.winner) : { S: "" },
+          ":turn": convertToAttr(gameState.players[oppIndex].id)
         },
         ExpressionAttributeNames: {
           "#S": "status"
         },
         ReturnValues: "ALL_NEW",
       }
-
-      console.log(gameState);
-      console.log(gameState.players[userIndex].cards);
 
       const updateCommand = new UpdateItemCommand(updateParams);
       

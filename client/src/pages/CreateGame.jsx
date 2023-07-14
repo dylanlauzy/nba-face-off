@@ -26,7 +26,7 @@ const CreateGame = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { data } = await createGame({ variables: { name: gameName, player: { name: playerName } }});
-    localStorage.setItem('playerId', data.createGame.players[0].id);
+    localStorage.setItem('userId', data.createGame.players[0].id);
     navigate(`/lobby/${data.createGame.id}`);
   }
 
