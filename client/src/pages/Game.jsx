@@ -3,11 +3,51 @@ import { useLoaderData } from "react-router-dom";
 import { useSubscription, gql } from "@apollo/client";
 import PlayerCard from '../components/PlayerCard';
 
+const GAME_STATE_SUBSCRIPTION = gql`
+  subscription GetGameState($gameId: ID!) {
+    getGameState(gameId: $gameId) {
+      id
+      name
+      status
+      players {
+        id
+        name
+        team
+        cardsLeft
+        cards {
+          id
+          name
+          age
+          team
+          games
+          pts
+          reb
+          ast
+          stl
+          blk
+          fgPct
+          ftPct
+          fg3Pct
+        }
+      }
+    }
+  }
+`
+
 const Game = () => {
-  const gameState = useLoaderData();
+  let gameState = useLoaderData();
   const playerId = localStorage.getItem("playerId");
-  console.log(gameState);
-  console.log("Player: ", playerId);
+  
+  const { data: subscriptionData, loading: subscriptionLoading } = useSubscription(
+    GAME_STATE_SUBSCRIPTION,
+    { variables: { gameId: gameState.id  } }
+  );
+
+  if (subscriptionData) {
+    console.log("new Data");
+    gameState = subscriptionData.getGameState;
+
+  };
 
   // create state variables for 'me' and 'opponent'
   const [me, setMe] = useState(gameState.players.find(player => player.id === playerId));

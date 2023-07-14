@@ -23,11 +23,11 @@ code {
   background-position: center;
 }
 
-.bg-bharis {
+/* .bg-bharis {
   background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0)), url('./assets/bharis.png');
   background-size: cover;
   background-position: center;
-}
+} */
 
 .flip-card {
   perspective: 1000px;

@@ -1,6 +1,7 @@
 enum Status {
   Waiting
   Active
+  Completed
 }
 
 type NBAPlayer {
@@ -34,6 +35,7 @@ type Game {
   status: String!
   turn: ID
   players: [Player]
+  winner: ID
   deleteAt: Int
 }
 
@@ -47,12 +49,16 @@ type Mutation {
   joinGame(gameId: ID!, player: PlayerInput): Game
   removeFromGame(gameId: ID!, playerId: ID!): Game
   startGame(gameId: ID!): Game
-  chooseStat(gameId: ID!, cardId: ID!, stat: String!): Game
+  chooseStat(gameId: ID!, userId: ID!, stat: String!): Game
 }
 
 type Subscription {
   getGameState(gameId: ID!, userId: ID): Game
-  statChosen(gameId: ID!): Game
+  statChosen(gameId: ID!, userId: ID!, stat: String!): Game
+}
+
+type chooseStatPayload {
+  game: Game
 }
 
 input PlayerInput {
