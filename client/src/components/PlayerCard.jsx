@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import Stats from "./Stats"
 
 const teams = {
@@ -34,8 +35,10 @@ const teams = {
   'WAS': 'to-WAS/95'
 }
 
-const PlayerCard = ( {player, isTurn, hidden} ) => {
+const PlayerCard = ( {player, isTurn, hidden, gameData} ) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  console.log(gameData)
 
   // pre-load image
   useEffect(() => {
@@ -43,18 +46,6 @@ const PlayerCard = ( {player, isTurn, hidden} ) => {
     img.src = `https://cdn.nba.com/headshots/nba/latest/1040x760/${player.id}.png`;
     img.onload = () => setImageLoaded(true);
   }, [player]);
-
-  const stats = {
-    "Age": player.age,
-    "Points Per Game": player.pts,
-    "Rebounds Per Game": player.reb,
-    "Assists Per Game": player.ast,
-    "Steals Per Game": player.stl,
-    "Blocks Per Game": player.blk,
-    "Field Goal %": player.fgPct,
-    "Free Throw %": player.ftPct,
-    "Three-Point %": player.fg3Pct,
-  }
 
   if(!imageLoaded) {
     return <div>Loading...</div>
@@ -78,7 +69,7 @@ const PlayerCard = ( {player, isTurn, hidden} ) => {
 
           <img alt={`player headshot for ${player.name}`} src={`https://cdn.nba.com/headshots/nba/latest/1040x760/${player.id}.png`} className="h-44 object-cover border-solid border-2 border-black"></img>
 
-          <Stats data={stats} isTurn={isTurn}/>
+          <Stats player={player} isTurn={isTurn} gameData={gameData}/>
 
           <div className="flex justify-between">
             <div>

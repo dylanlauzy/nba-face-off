@@ -60,6 +60,7 @@ const GET_STATE_GAME = gql`
       id
       name
       status
+      turn
       players {
         id
         name

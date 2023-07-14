@@ -27,13 +27,13 @@ const Game = () => {
         <div className="py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">
           <span className="font-bold">{me.name}:</span> {me.cardsLeft} cards remaining
         </div>
-        {me && <PlayerCard player={me.cards[0]} isTurn={true} hidden={false}/>}
+        {me && <PlayerCard player={me.cards[0]} isTurn={gameState.turn === playerId} hidden={false} gameData={{gameId: gameState.id, playerId}}/>}
       </div>
       <div className="m-auto flex flex-col gap-y-3">
         <div className="py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">
           <span className="font-bold">{opponent.name}:</span> {me.cardsLeft} cards remaining
         </div>
-        {opponent && <PlayerCard player={opponent.cards[0]} isTurn={false} hidden={true}/>}
+        {opponent && <PlayerCard player={opponent.cards[0]} isTurn={false} hidden={true} gameData={{gameId: gameState.id, playerId}}/>}
       </div>
     </div>
   )

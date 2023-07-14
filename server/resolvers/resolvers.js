@@ -114,6 +114,7 @@ const resolvers = {
         name: name ? name: "New Game" ,
         status: "Waiting",
         deleteAt: Math.floor((Date.now() / 1000) + (60*60*24)), // time for AWS in seconds - delete in a day
+        turn: player.id ? player.id : "1",
         players: [{
           id: player.id ? player.id : "1",
           name: player.name,
@@ -261,7 +262,7 @@ const resolvers = {
       }
     },
     chooseStat: async (_ , { gameId, playerId, stat }) => {
-      
+
     }
   },
   Subscription: {
