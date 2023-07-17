@@ -12,7 +12,7 @@ const CHOOSE_STAT = gql`
   }
 `
 
-const Stats = ({ player, isTurn, gameData: { gameId, userId} }) => {
+const Stats = ({ player, isTurn, highlightStat, gameData: { gameId, userId} }) => {
 
   const [chooseStat, {data, loading, error}] = useMutation(CHOOSE_STAT);
 
@@ -38,12 +38,22 @@ const Stats = ({ player, isTurn, gameData: { gameId, userId} }) => {
   return (
     <div className="text-sm flex flex-col gap-y-1">
       {Object.entries(stats).map(([key, val]) => {
-        return (
-        <div className={`flex justify-between px-2 ${isTurn ? "hover:font-bold hover:cursor-pointer hover:bg-slate-100/50 hover:rounded-lg": "pointer-events-none"}`} onClick={handleClick} stat-type={val[1]}>
-          <div className="font-bold font-secondary pointer-events-none">{key}:</div>
-          <div className="font-secondary pointer-events-none">{val[0]}</div>
-        </div>
-        )})}
+        if(highlightStat) {
+          return (
+            <div className={`flex justify-between px-2 pointer-events-none ${highlightStat === val[1] ? 'bg-slate-100/50 rounded-lg font-bold' : 'opacity-10'}`} onClick={handleClick} stat-type={val[1]}>
+              <div className="font-bold font-secondary pointer-events-none">{key}:</div>
+              <div className="font-secondary pointer-events-none">{val[0]}</div>
+            </div>
+          )
+        } else {
+          return (
+            <div className={`flex justify-between px-2 ${isTurn ? "hover:font-bold hover:cursor-pointer hover:bg-slate-100/50 hover:rounded-lg": "pointer-events-none"}`} onClick={handleClick} stat-type={val[1]}>
+              <div className="font-bold font-secondary pointer-events-none">{key}:</div>
+              <div className="font-secondary pointer-events-none">{val[0]}</div>
+            </div>
+          )
+        }
+      })}
     </div>
   )
 }

@@ -35,7 +35,7 @@ const teams = {
   'WAS': 'to-WAS/95'
 }
 
-const PlayerCard = ( {player, isTurn, hidden, gameData} ) => {
+const PlayerCard = ( {player, isTurn, hidden, winner, highlightStat, gameData} ) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   console.log(gameData)
@@ -58,7 +58,7 @@ const PlayerCard = ( {player, isTurn, hidden, gameData} ) => {
           <div className="m-auto bg-card-back bg-cover bg-center w-80 h-128 rounded-3xl border-solid border-4 border-white flex flex-col gap-y-2"></div>
         </div>
         <div className="flip-card-back">
-        <div className={`m-auto bg-gradient-to-br from-slate-100 ${teams[player.team]} w-80 h-128 rounded-3xl border-solid border-4 border-white flex flex-col p-6 gap-y-2`}>
+        <div className={`${winner && 'shadow-xl shadow-yellow-300'} m-auto bg-gradient-to-br from-slate-100 ${teams[player.team]} w-80 h-128 rounded-3xl border-solid border-4 border-white flex flex-col p-6 gap-y-2`}>
           <div className="flex items-center gap-x-2">
             <img alt={`team logo: ${player.team}`} src={require(`../assets/${player.team}.png`)} className="w-16 h-16"></img>
             <div className="flex flex-col">
@@ -69,7 +69,7 @@ const PlayerCard = ( {player, isTurn, hidden, gameData} ) => {
 
           <img alt={`player headshot for ${player.name}`} src={`https://cdn.nba.com/headshots/nba/latest/1040x760/${player.id}.png`} className="h-44 object-cover border-solid border-2 border-black"></img>
 
-          <Stats player={player} isTurn={isTurn} gameData={gameData}/>
+          <Stats player={player} isTurn={isTurn} highlightStat={highlightStat} gameData={gameData}/>
 
           <div className="flex justify-between">
             <div>

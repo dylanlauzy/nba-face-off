@@ -140,7 +140,7 @@ const resolvers = {
         turn: player.id ? player.id : "1",
         players: [{
           id: player.id ? player.id : "1",
-          name: player.name,
+          name: player.name ? player.name : "Player 1",
           team: player.team ? player.team : randomTeam(),
           cards: [],
         }],
@@ -174,7 +174,7 @@ const resolvers = {
           ":newPlayer": {L: [{
             M: {
               id: player.id ? { S: player.id } : { S: "2"},
-              name: { S: player.name },
+              name: { S: player.name ? player.name : "Player 2" },
               team: player.team ? { S: player.team } : { S: randomTeam() },
               cards: {L: [] }
             }
