@@ -316,6 +316,8 @@ const resolvers = {
       
       const userStat = parseFloat(userCard[stat]);
       const oppStat = parseFloat(oppCard[stat]);
+      
+      let winnerId = "";
       if(userStat == oppStat) {
         // TEMP: put both cards at back
         // TODO: impelement "add to pile" where pile builds up with both cards until someone wins
@@ -323,10 +325,6 @@ const resolvers = {
         gameState.players[oppIndex].cards.push(oppCard);
       } else if ((userStat > oppStat && !STATS_BIG[stat]) || (userStat < oppStat && STATS_BIG[stat])) {
         // user loses (bigger stat for a small stat || smaller stat for a big stat)
-        // console.log(`player ${userId} has lost after choosing ${stat}`)
-        // console.log(gameState.players[userIndex].id, ": ", userCard.name, userStat)
-        // console.log(gameState.players[oppIndex].id, ": ", oppCard.name, oppStat)
-
         gameState.players[oppIndex].cards.push(userCard);
         gameState.players[oppIndex].cards.push(oppCard);
 
@@ -336,9 +334,7 @@ const resolvers = {
         };
 
         gameState.players[oppIndex].cardsLeft++;
-        // console.log("---cards remaining---")
-        // console.log(gameState.players[userIndex].id, ": ", gameState.players[userIndex].cardsLeft)
-        // console.log(gameState.players[oppIndex].id, ": ", gameState.players[oppIndex].cardsLeft)
+        winnerId = gameState.players[oppIndex].id;
       } else {
         // user wins
         // console.log(`player ${userId} has won after choosing ${stat}`)
@@ -354,6 +350,7 @@ const resolvers = {
         }
 
         gameState.players[userIndex].cardsLeft++
+        winnerId = gameState.players[userIndex].id;
       }
 
       const updateParams = {
@@ -378,6 +375,14 @@ const resolvers = {
         const updateResponse = await dynamoDB.send(updateCommand);
         const data = unmarshall(updateResponse.Attributes);
         pubsub.publish("GAME_UPDATE", { getGameState: data });
+        pubsub.publish("STAT_CHOSEN", {
+          statChosen: {
+            gameState: data,
+            roundWinner: winnerId,
+            chosenStat: stat,
+            chosenBy: userId
+          }
+        })
         return data;
       } catch(error) {
         console.error("DynamoDB error at chooseStat:", error)
@@ -392,6 +397,16 @@ const resolvers = {
         (payload, variables) => {
           return (
             payload.getGameState.id == variables.gameId
+          )
+        }
+      ),
+    },
+    statChosen: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(['STAT_CHOSEN']),
+        (payload, variables) => {
+          return (
+            payload.statChosen.gameState.id == variables.gameId
           )
         }
       ),

@@ -54,12 +54,13 @@ type Mutation {
 
 type Subscription {
   getGameState(gameId: ID!, userId: ID): Game
-  statChosen(gameId: ID!, userId: ID!): chooseStatPayload
+  statChosen(gameId: ID!, userId: ID): chooseStatPayload
 }
 
 type chooseStatPayload {
-  game: Game!
-  roundWinner: Player
+  gameState: Game!
+  chosenBy: ID!
+  roundWinner: ID
   chosenStat: String
 }
 
