@@ -53,6 +53,7 @@ const Game = () => {
 
   // create state variables for 'me' and 'opponent'
   const [me, setMe] = useState(gameState.players.find(player => player.id === userId));
+  const [flip, setFlip] = useState(false);
   const [opponent, setOpponent] = useState(gameState.players.find(player => player.id !== userId));
 
   // update 'me' and 'opponent' whenever 'gameState' or 'userId' changes
@@ -60,6 +61,9 @@ const Game = () => {
     if (gameState && userId) {
       setMe(gameState.players.find(player => player.id === userId));
       setOpponent(gameState.players.find(player => player.id !== userId));
+
+      setFlip(true);
+      setTimeout(() => setFlip(false), 500)
     }
   }, [gameState, userId]);
 
@@ -71,18 +75,23 @@ const Game = () => {
     )
   } else {
     return (
-      <div className="flex h-screen bg-hero">
-        <div className="m-auto flex flex-col gap-y-3">
-          <div className="py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">
-            <span className="font-bold">{me.name}:</span> {me.cardsLeft} cards remaining
-          </div>
-          {me && <PlayerCard player={me.cards[0]} isTurn={gameState.turn === userId} hidden={false} gameData={{gameId: gameState.id, userId}}/>}
+      <div className="flex flex-col gap-y-16 h-screen bg-hero justify-center">
+        <div className="w-128 mx-auto py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">
+          <span className="font-bold">{me.name}:</span> {me.cardsLeft} cards remaining
         </div>
-        <div className="m-auto flex flex-col gap-y-3">
-          <div className="py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">
-            <span className="font-bold">{opponent.name}:</span> {opponent.cardsLeft} cards remaining
+        <div className="flex">
+          <div className="m-auto flex flex-col gap-y-3">
+            <div className="py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">
+              <span className="font-bold">{me.name}:</span> {me.cardsLeft} cards remaining
+            </div>
+            {me && <PlayerCard player={me.cards[0]} isTurn={gameState.turn === userId} hidden={flip} gameData={{gameId: gameState.id, userId}}/>}
           </div>
-          {opponent && <PlayerCard player={opponent.cards[0]} isTurn={false} hidden={true} gameData={{gameId: gameState.id, userId}}/>}
+          <div className="m-auto flex flex-col gap-y-3">
+            <div className="py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">
+              <span className="font-bold">{opponent.name}:</span> {opponent.cardsLeft} cards remaining
+            </div>
+            {opponent && <PlayerCard player={opponent.cards[0]} isTurn={false} hidden={true} gameData={{gameId: gameState.id, userId}}/>}
+          </div>
         </div>
       </div>
     )
