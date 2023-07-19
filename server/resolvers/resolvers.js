@@ -361,7 +361,7 @@ const resolvers = {
           ":players": convertToAttr(gameState.players),
           ":status": convertToAttr(gameState.status),
           ":winner": gameState.winner ? convertToAttr(gameState.winner) : { S: "" },
-          ":turn": convertToAttr(gameState.players[oppIndex].id)
+          ":turn": convertToAttr(winnerId ? winnerId : userId)
         },
         ExpressionAttributeNames: {
           "#S": "status"
