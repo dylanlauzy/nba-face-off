@@ -3,6 +3,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider, gql, split, HttpLink} from
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
+import { ChakraProvider } from '@chakra-ui/react';
 
 import CreateGame from './pages/CreateGame';
 import Lobby from './pages/Lobby';
@@ -131,7 +132,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ApolloProvider client={client}>
-      <RouterProvider router={router}/>
+      <ChakraProvider>
+        <RouterProvider router={router}/>
+      </ChakraProvider>
     </ApolloProvider>
   );
 }
