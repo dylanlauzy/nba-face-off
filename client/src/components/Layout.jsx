@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import {
   IconButton,
   Tooltip,
@@ -18,11 +20,13 @@ const Layout = ({ children }) => {
 
   return (
     <div className="h-screen bg-hero bg-cover">
-      <header className="fixed w-full py-6 px-16 bg-black/75 flex justify-between items-end font-primary text-white font-bold">
-        <h1 className="text-5xl">NBA Face Off</h1>
+      <header className="z-10 fixed w-full py-6 px-16 bg-black/75 flex justify-between items-end font-primary text-white font-bold">
+        <h1 className="text-5xl">
+          <Link to="/">NBA Face Off</Link>
+        </h1>
         <div className="flex gap-x-8 text-xl">
-          <a>New Game</a>
-          <a>About</a>
+          <Link to="/">New Game</Link>
+          <Link to="/">About</Link>
         </div>
       </header>
 
@@ -37,7 +41,7 @@ const Layout = ({ children }) => {
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
-          <ModalHeader fontSize="3xl">How to Play</ModalHeader>
+          <ModalHeader fontSize="3xl">NBA Face Off - How to Play</ModalHeader>
           
           <ModalBody>
             <b>Overview:</b> NBA Face-Off is a web-based card game that challenges your NBA knowledge and luck. The game is played with a deck of NBA player cards, each featuring a player and their stats from the past season. The objective of the game is to win all of your opponent's cards. 
