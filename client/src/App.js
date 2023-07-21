@@ -11,8 +11,10 @@ import Game from './pages/Game';
 import ErrorPage from './pages/ErrorPage';
 
 // const API_URI = process.env.REACT_APP_API_URI;
-const API_URI = `https:${process.env.REACT_APP_API_URI}`;
-const SUBSCRIPTION_URL = `ws://${process.env.REACT_APP_API_URI}`;
+
+/* eslint-disable no-restricted-globals */
+const API_URI = process.env.REACT_APP_API_URI ? `https:${process.env.REACT_APP_API_URI}` : `https://${location.host}/graphql`;
+const SUBSCRIPTION_URL = process.env.REACT_APP_API_URI ? `ws://${process.env.REACT_APP_API_URI}` : `ws://${location.host}/graphql`;
 
 const httpLink = new HttpLink({
   uri: API_URI

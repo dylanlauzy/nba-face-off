@@ -1,7 +1,10 @@
 import { ApolloServer } from '@apollo/server';
 
 import { expressMiddleware } from '@apollo/server/express4';
-import cors from 'cors'; 
+import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import bodyParser from 'body-parser';
 
@@ -14,6 +17,7 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import { readFileSync } from 'fs';
 
 import resolvers from './resolvers/resolvers.js';
+import path from 'path';
 const typeDefs = readFileSync(new URL('./schema.graphql', import.meta.url)).toString('utf-8');
 
 // Develop server locally
@@ -47,6 +51,13 @@ const server = new ApolloServer({
 
 await server.start();
 app.use('/graphql', cors(), bodyParser.json(), expressMiddleware(server));
+
+if(process.env.NODE_ENV === 'production') {
+  console.log("running in production")
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html')))
+}
   
 const PORT = process.env.PORT || 4000;
 
