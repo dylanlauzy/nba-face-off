@@ -10,8 +10,8 @@ import Game from './pages/Game';
 import ErrorPage from './pages/ErrorPage';
 
 // const API_URI = process.env.REACT_APP_API_URI;
-const API_URI = "http://localhost:4000/graphql";
-const SUBSCRIPTION_URL = "ws://localhost:4000/graphql";
+const API_URI = `https:${process.env.REACT_APP_API_URI}`;
+const SUBSCRIPTION_URL = `ws://${process.env.REACT_APP_API_URI}`;
 
 const httpLink = new HttpLink({
   uri: API_URI

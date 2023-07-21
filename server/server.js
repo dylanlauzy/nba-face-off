@@ -11,11 +11,9 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 
-import { startServerAndCreateLambdaHandler, handlers } from '@as-integrations/aws-lambda';
 import { readFileSync } from 'fs';
 
 import resolvers from './resolvers/resolvers.js';
-import { create } from 'domain';
 const typeDefs = readFileSync(new URL('./schema.graphql', import.meta.url)).toString('utf-8');
 
 // Develop server locally
@@ -49,25 +47,9 @@ const server = new ApolloServer({
 
 await server.start();
 app.use('/graphql', cors(), bodyParser.json(), expressMiddleware(server));
-
-const PORT = 4000;
+  
+const PORT = process.env.PORT || 4000;
 
 httpServer.listen(PORT, () => {
   console.log(`server started at: http://localhost:${PORT}/graphql`)
 })
-
-
-
-// console.log(`server started at: ${url}`)
-
-
-// Host server to AWS
-// const server = new ApolloServer({
-//   typeDefs,
-//   resolvers,
-// });
-
-// export const graphqlHandler = startServerAndCreateLambdaHandler(
-//   server,
-//   handlers.createAPIGatewayProxyEventV2RequestHandler(),
-// );
