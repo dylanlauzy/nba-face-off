@@ -14,7 +14,7 @@ import ErrorPage from './pages/ErrorPage';
 
 /* eslint-disable no-restricted-globals */
 const API_URI = process.env.REACT_APP_API_URI ? `https:${process.env.REACT_APP_API_URI}` : `https://${location.host}/graphql`;
-const SUBSCRIPTION_URL = process.env.REACT_APP_API_URI ? `ws://${process.env.REACT_APP_API_URI}` : `ws://${location.host}/graphql`;
+const SUBSCRIPTION_URL = process.env.REACT_APP_API_URI ? `wss://${process.env.REACT_APP_API_URI}` : `wss://${location.host}/graphql`;
 console.log("API: ", API_URI);
 console.log("WS: ", SUBSCRIPTION_URL);
 
