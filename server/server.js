@@ -52,12 +52,12 @@ const server = new ApolloServer({
 await server.start();
 app.use('/graphql', cors(), bodyParser.json(), expressMiddleware(server));
 
-// if(process.env.NODE_ENV === 'production') {
-//   console.log("running in production")
-//   const __dirname = path.resolve();
-//   app.use(express.static(path.join(__dirname, 'client/build')));
-//   app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html')))
-// }
+if(process.env.NODE_ENV === 'production') {
+  console.log("running in production")
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html')))
+}
   
 const PORT = process.env.PORT || 4000;
 
