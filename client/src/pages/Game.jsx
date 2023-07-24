@@ -119,7 +119,7 @@ const Game = () => {
             numberOfPieces={1000}
             tweenDuration={10000}
           />
-          <div className="flex flex-col h-screen justify-center items-center">
+          <div className="flex flex-col h-full justify-center items-center">
             <img src={require("../assets/goat.png")} alt="Goat" className="w-64 h-auto"/>
             <div className="text-6xl text-white font-bold text-center">
               {`${gameState.players.find(player => player.id === gameState.winner).name} is the winner!!`}
@@ -132,7 +132,7 @@ const Game = () => {
     return (
       <Layout>
         <div className={`fixed top-0 left-0 w-full h-full bg-black ${roundWinner ? 'opacity-50' : 'opacity-0'} transition-color duration-1000`}></div>
-        <div className={`flex flex-col gap-y-16 h-screen justify-center`}>
+        <div className={`flex flex-col gap-y-16 h-full justify-center`}>
           <div className="flex">
             <div className="m-auto flex flex-col gap-y-3">
               <div className="py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">

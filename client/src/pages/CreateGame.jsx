@@ -35,7 +35,7 @@ const CreateGame = () => {
 
   return (
     <Layout>
-      <div className="flex h-screen">
+      <div className="flex h-full">
         <div className="flex flex-col m-auto w-[34rem] py-7 px-8 gap-y-3 rounded-3xl bg-white/95">
           <div className="font-bold text-4xl text-center font-primary my-px">NBA Face Off</div>
           <div className="w-full h-1 bg-blue-800"></div>

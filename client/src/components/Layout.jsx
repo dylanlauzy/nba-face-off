@@ -20,7 +20,7 @@ const Layout = ({ children }) => {
 
   return (
     <div className="h-screen bg-hero bg-cover">
-      <header className="z-10 fixed w-full py-6 px-16 bg-black/75 flex justify-between items-end font-primary text-white font-bold">
+      <header className="fixed z-10 w-full py-6 px-16 bg-black/75 flex justify-between items-end font-primary text-white font-bold">
         <h1 className="text-5xl">
           <Link to="/">NBA Face Off</Link>
         </h1>
@@ -30,7 +30,7 @@ const Layout = ({ children }) => {
         </div>
       </header>
 
-      <main>
+      <main className="pt-24 h-screen overflow-scroll">
         {children}
       </main>
 

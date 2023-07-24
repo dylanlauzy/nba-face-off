@@ -78,7 +78,7 @@ const Lobby = () => {
 
   return (
     <Layout>
-      <div className="flex h-screen">
+      <div className="flex h-full">
         <div className="flex flex-col items-center m-auto py-7 px-8 gap-y-3 rounded-3xl bg-white/95">
           <div className="font-bold text-4xl text-center font-primary my-px">{gameState.name}</div>
           <div className="w-full h-1 bg-blue-800"></div>

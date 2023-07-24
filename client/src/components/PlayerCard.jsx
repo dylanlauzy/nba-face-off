@@ -71,14 +71,7 @@ const PlayerCard = ( {player, isTurn, hidden, winner, highlightStat, gameData} )
 
           <Stats player={player} isTurn={isTurn} highlightStat={highlightStat} gameData={gameData}/>
 
-          <div className="flex justify-between">
-            <div>
-              <div className="text-xs font-secondary font-bold underline">Awards</div>
-              <div className="text-xs font-secondary">5x All Star | 2x NBA Champion | 2x Finals MVP | 2x Def. POY | 1x All-Star MVP </div>
-            </div>
-
-            <img alt={`team logo: ${player.team}`} src={require(`../assets/${player.team}.png`)} className="w-16 h-16"></img>
-          </div>
+          
         </div>
         </div>
       </div>

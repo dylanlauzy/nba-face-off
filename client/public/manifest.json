@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "NBA Face Off",
+  "name": "NBA Face Off - an online NBA card game",
   "icons": [
     {
       "src": "favicon.ico",

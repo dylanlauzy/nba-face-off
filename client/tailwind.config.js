@@ -10,7 +10,7 @@ module.exports = {
     },
     extend: {
       spacing: {
-        '128': '36rem'
+        '128': '33rem'
       },
       backgroundImage: {
         'card-back': "url('assets/card_back.png')"
