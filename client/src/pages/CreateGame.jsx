@@ -28,7 +28,10 @@ const CreateGame = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { data } = await createGame({ variables: { name: gameName, player: { name: playerName } }});
-    localStorage.setItem('userId', data.createGame.players[0].id);
+
+    let userData = JSON.parse(localStorage.getItem('nba-face-off-userData')) || { games: {} };
+    userData.games[data.createGame.id] = { playerId: data.createGame.players[0].id }
+    localStorage.setItem('nba-face-off-userData', JSON.stringify(userData));
     navigate(`/lobby/${data.createGame.id}`);
   }
 

@@ -24,7 +24,11 @@ const PopoverForm = ({ gameState }) => {
     e.preventDefault();
     const { data } = await joinGame({ variables: { gameId: gameState.id, player: { name: playerName } } });
     console.log(data);
-    localStorage.setItem('userId', data.joinGame.players[1].id);
+    
+    let userData = JSON.parse(localStorage.getItem('nba-face-off-userData')) || { games: {}};
+    userData.games[gameState.id] = { playerId: data.joinGame.players[1].id }
+    localStorage.setItem('nba-face-off-userData', JSON.stringify(userData));
+
     revalidator.revalidate();
   }
 

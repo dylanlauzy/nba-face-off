@@ -33,9 +33,11 @@ const GAME_STATE_SUBSCRIPTION = gql`
 
 const Lobby = () => {
   // load data from route loader
-  const userId = localStorage.getItem('userId');
   let gameState = useLoaderData();
   const navigate = useNavigate();
+  
+  const userData = JSON.parse(localStorage.getItem('nba-face-off-userData')) || {games: {} };
+  let userId = userData.games[gameState.id] ? userData.games[gameState.id].playerId : "";
   
   const { data: subscriptionData, loading: subscriptionLoading } = useSubscription(
     GAME_STATE_SUBSCRIPTION,

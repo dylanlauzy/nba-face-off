@@ -46,10 +46,14 @@ const STAT_CHOSEN_SUBSCRIPTION = gql`
 `
 
 const Game = () => {
-  const userId = localStorage.getItem("userId");
-  
   // create state variables for 'me' and 'opponent'
   const [gameState, setGameState] = useState(useLoaderData());
+  console.log(gameState);
+  console.log();
+  
+  const userData = JSON.parse(localStorage.getItem('nba-face-off-userData'));
+  const userId = userData.games[gameState.id].playerId;
+  
   const [me, setMe] = useState(gameState.players.find(player => player.id === userId));
   const [opponent, setOpponent] = useState(gameState.players.find(player => player.id !== userId));
   
