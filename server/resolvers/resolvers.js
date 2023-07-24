@@ -337,10 +337,6 @@ const resolvers = {
         winnerId = gameState.players[oppIndex].id;
       } else {
         // user wins
-        // console.log(`player ${userId} has won after choosing ${stat}`)
-        // console.log(gameState.players[userIndex].id, ": ", userCard.name, userStat)
-        // console.log(gameState.players[oppIndex].id, ": ", oppCard.name, oppStat)
-
         gameState.players[userIndex].cards.push(userCard);
         gameState.players[userIndex].cards.push(oppCard);
         

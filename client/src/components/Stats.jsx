@@ -30,8 +30,6 @@ const Stats = ({ player, isTurn, highlightStat, gameData: { gameId, userId} }) =
 
   const handleClick = (e) => {
     const stat = e.target.getAttribute('stat-type');
-    console.log(gameId, userId, stat);
-
     chooseStat({ variables: { gameId, userId, stat } });
   }
 

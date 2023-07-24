@@ -23,7 +23,6 @@ const PopoverForm = ({ gameState }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { data } = await joinGame({ variables: { gameId: gameState.id, player: { name: playerName } } });
-    console.log(data);
     
     let userData = JSON.parse(localStorage.getItem('nba-face-off-userData')) || { games: {}};
     userData.games[gameState.id] = { playerId: data.joinGame.players[1].id }

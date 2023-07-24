@@ -4,6 +4,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
+import colors from 'colors';
 
 import express from 'express';
 import bodyParser from 'body-parser';
@@ -62,5 +63,5 @@ if(process.env.NODE_ENV === 'production') {
 const PORT = process.env.PORT || 4000;
 
 httpServer.listen(PORT, () => {
-  console.log(`server started at: http://localhost:${PORT}/graphql`)
+  console.log(colors.cyan(`server started on port ${PORT}`))
 })

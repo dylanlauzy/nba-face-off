@@ -38,8 +38,6 @@ const teams = {
 const PlayerCard = ( {player, isTurn, hidden, winner, highlightStat, gameData} ) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  console.log(gameData)
-
   // pre-load image
   useEffect(() => {
     const img = new Image();

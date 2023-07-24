@@ -13,10 +13,8 @@ import ErrorPage from './pages/ErrorPage';
 // const API_URI = process.env.REACT_APP_API_URI;
 
 /* eslint-disable no-restricted-globals */
-const API_URI = process.env.REACT_APP_API_URI ? `https:${process.env.REACT_APP_API_URI}` : `https://${location.host}/graphql`;
-const SUBSCRIPTION_URL = process.env.REACT_APP_API_URI ? `wss://${process.env.REACT_APP_API_URI}` : `wss://${location.host}/graphql`;
-console.log("API: ", API_URI);
-console.log("WS: ", SUBSCRIPTION_URL);
+const API_URI = process.env.REACT_APP_NODE_ENV === "development" ? "http://localhost:4000/graphql" : `https://${location.host}/graphql`;
+const SUBSCRIPTION_URL = process.env.REACT_APP_NODE_ENV === "development" ? "ws://localhost:4000/graphql" : `wss://${location.host}/graphql`;
 
 const httpLink = new HttpLink({
   uri: API_URI

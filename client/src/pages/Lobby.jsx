@@ -45,7 +45,6 @@ const Lobby = () => {
   );
 
   if(subscriptionData) {
-    console.log("new Data");
     gameState = subscriptionData.getGameState;
 
   };
