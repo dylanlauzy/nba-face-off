@@ -187,7 +187,7 @@ const Game = () => {
                   <PlayerCardBack
                     index={index}
                     stacked={true}
-                    style={{position: 'absolute', left: `${index * 15}px`, zIndex: 12 - (index + 1)}}
+                    style={{position: 'absolute', left: `${(index + 1) * 15}px`, zIndex: 12 - (index + 1)}}
                   /> )
                 }
               </div>
