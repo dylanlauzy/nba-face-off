@@ -4,12 +4,13 @@ from nba_api.stats.endpoints import leaguedashplayerstats
 import pandas
 
 def fetchData(event, context):
+    print("Populating data...")
     try:
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table('NBAPlayerData')
         
         players_df = leaguedashplayerstats.LeagueDashPlayerStats(per_mode_detailed="PerGame").get_data_frames()[0]
-        players_df = players_df[['PLAYER_ID', 'PLAYER_NAME', 'TEAM_ABBREVIATION', 'AGE', 'GP', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'FG_PCT', 'FT_PCT', 'FG3_PCT']]
+        players_df = players_df[['PLAYER_ID', 'PLAYER_NAME', 'TEAM_ABBREVIATION', 'AGE', 'GP', 'MIN', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'FG_PCT', 'FT_PCT', 'FG3_PCT']]
         players_df = players_df.applymap(lambda x: Decimal(str(x)) if isinstance(x, float) else x)
 
         players_dict = players_df.to_dict('records')
@@ -31,12 +32,13 @@ def fetchData(event, context):
         for item in items_to_update:
             table.update_item(
                 Key={ 'PLAYER_ID': item['PLAYER_ID'] },
-                UpdateExpression="set PLAYER_NAME = :n, TEAM_ABBREVIATION = :t, AGE = :age, GP = :gp, PTS = :p, REB = :r, AST = :a, STL = :s, BLK = :b, FG_PCT = :f, FT_PCT = :ft, FG3_PCT = :fg3",
+                UpdateExpression="set PLAYER_NAME = :n, TEAM_ABBREVIATION = :t, AGE = :age, GP = :gp, MIN = :min, PTS = :p, REB = :r, AST = :a, STL = :s, BLK = :b, FG_PCT = :f, FT_PCT = :ft, FG3_PCT = :fg3",
                 ExpressionAttributeValues={
                     ':n': item['PLAYER_NAME'],
                     ':t': item['TEAM_ABBREVIATION'],
                     ':age': item['AGE'],
                     ':gp': item['GP'],
+                    ':min': item['MIN'],
                     ':p': item['PTS'],
                     ':r': item['REB'],
                     ':a': item['AST'],
@@ -47,6 +49,8 @@ def fetchData(event, context):
                     ':fg3': item['FG3_PCT']
                 },
             )
+
+        print("Finished")
         
         return {
             'statusCode': 200,

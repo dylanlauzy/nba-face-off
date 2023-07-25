@@ -30,9 +30,13 @@ const getRandomPlayers = async (count) => {
   const params = {
     TableName: "NBAPlayerData",
     ProjectionExpression: "PLAYER_ID",
-    FilterExpression: "GP >:value",
+    FilterExpression: "GP > :minGames AND #M > :minMins",
+    ExpressionAttributeNames: {
+      "#M": "MIN",
+    },
     ExpressionAttributeValues: {
-      ':value': { N: '30'}
+      ':minGames': { N: '30'},
+      ':minMins': { N: '20' }
     }
   }
 

@@ -15,9 +15,6 @@ module.exports = {
       backgroundImage: {
         'card-back': "url('assets/card_back.png')"
       },
-      // backgroundImage: {
-      //   'hero': "url('assets/background.jpeg')",
-      // },
       colors: {
         'ATL': '#e03a3e',
         'BOS': '#008348',

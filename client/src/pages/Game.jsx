@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
 import { useSubscription, gql } from "@apollo/client";
+import {useWindowSize} from 'react-use';
+import Confetti from 'react-confetti';
 
 import Layout from "../components/Layout";
-import Confetti from 'react-confetti';
-import {useWindowSize} from 'react-use';
 import PlayerCard from '../components/PlayerCard';
+import PlayerCardBack from "../components/PlayerCardBack";
 
 const STAT_CHOSEN_SUBSCRIPTION = gql`
   subscription StatChosen($gameId: ID!) {
@@ -60,6 +61,7 @@ const Game = () => {
   const [vsHidden, setVsHidden] = useState(true);
   const [roundWinner, setRoundWinner] = useState("");
   const [chosenStat, setChosenStat] = useState("");
+  const [imagesLoading, setImagesLoading] = useState(true);
 
   const onStatChosen = ({ data }) => {
     // flip both cards upwards
@@ -107,6 +109,30 @@ const Game = () => {
     }
   }, [gameState, userId]);
 
+  useEffect(() => {
+    // Create an array to store the loading promises
+    const loadingPromises = [];
+  
+    // Preload all player images
+    gameState.players.forEach(player => {
+      player.cards.forEach(card => {
+        const img = new Image();
+        img.src = `https://cdn.nba.com/headshots/nba/latest/1040x760/${card.id}.png`;
+  
+        // Push the loading promise to the array
+        const loadingPromise = new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+        loadingPromises.push(loadingPromise);
+      });
+    });
+  
+    // Use Promise.all to wait for all images to load
+    Promise.all(loadingPromises).then(() => {
+      setImagesLoading(false);
+    });
+  }, []);
 
   const { width, height } = useWindowSize()
   
@@ -130,6 +156,12 @@ const Game = () => {
         </Layout>
       </>
     )
+  } else if (imagesLoading) {
+    return (
+      <Layout>
+        Loading...
+      </Layout>
+    )
   } else {
     return (
       <Layout>
@@ -140,30 +172,49 @@ const Game = () => {
               <div className="py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">
                 <span className="font-bold">{me.name}:</span> {me.cardsLeft} cards remaining
               </div>
-              {me && 
-                <PlayerCard 
-                  player={me.cards[0]}
-                  isTurn={gameState.turn === userId}
-                  hidden={userCardHidden}
-                  winner={roundWinner === me.id}
-                  highlightStat={chosenStat}
-                  gameData={{gameId: gameState.id, userId}}
-                />}
+
+              <div className="flex relative">
+                {me && 
+                  <PlayerCard 
+                    player={me.cards[0]}
+                    isTurn={gameState.turn === userId}
+                    hidden={userCardHidden}
+                    winner={roundWinner === me.id}
+                    highlightStat={chosenStat}
+                    gameData={{gameId: gameState.id, userId}}
+                  />}
+                {Array.from({length: parseInt(me.cardsLeft) - 1}).map((_, index) => 
+                  <PlayerCardBack
+                    index={index}
+                    stacked={true}
+                    style={{position: 'absolute', left: `${index * 15}px`, zIndex: 12 - (index + 1)}}
+                  /> )
+                }
+              </div>
             </div>
             <img src={require('../assets/vs.png')} alt="vs" className={`h-32 w-auto self-center transition-all duration-500 ${vsHidden && 'opacity-0'}`}/>
             <div className="m-auto flex flex-col gap-y-3">
               <div className="py-2.5 px-5 bg-white/90 rounded-3xl font-primary text-center">
                 <span className="font-bold">{opponent.name}:</span> {opponent.cardsLeft} cards remaining
               </div>
-              {opponent && 
-                <PlayerCard 
+              <div className="flex relative">
+                {opponent && 
+                  <PlayerCard 
                   player={opponent.cards[0]}
                   isTurn={false}
                   hidden={oppCardHidden}
                   winner={roundWinner === opponent.id}
                   highlightStat={chosenStat}
                   gameData={{gameId: gameState.id, userId}}
-                />}
+                  />}
+                {Array.from({length: parseInt(opponent.cardsLeft) - 1}).map((_, index) => 
+                  <PlayerCardBack
+                    index={index}
+                    stacked={true}
+                    style={{position: 'absolute', left: `${index * 15}px`, zIndex: 12 - (index + 1)}}
+                  /> )
+                }
+              </div>
             </div>
           </div>
         </div>

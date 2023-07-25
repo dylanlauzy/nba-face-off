@@ -1,38 +1,39 @@
 import { useState, useEffect } from "react";
 
 import Stats from "./Stats"
+import PlayerCardBack from "./PlayerCardBack";
 
 const teams = {
-  'ATL': 'to-ATL/95',
-  'BOS': 'to-BOS/95',
-  'CLE': 'to-CLE/95',
-  'MIA': 'to-MIA/95',
-  'OKC': 'to-OKC/95',
-  'GSW': 'to-GSW/95',
-  'HOU': 'to-HOU/95',
-  'BKN': 'to-BKN/95',
-  'CHA': 'to-CHA/95',
-  'CHI': 'to-CHI/95',
-  'DAL': 'to-DAL/95',
-  'DEN': 'to-DEN/95',
-  'DET': 'to-DET/95',
-  'IND': 'to-IND/95',
-  'LAC': 'to-LAC/95',
-  'LAL': 'to-LAL/95',
-  'MEM': 'to-MEM/95',
-  'MIL': 'to-MIL/95',
-  'MIN': 'to-MIN/95',
-  'NOP': 'to-NOP/95',
-  'NYK': 'to-NYK/95',
-  'ORL': 'to-ORL/95',
-  'PHI': 'to-PHI/95',
-  'PHX': 'to-PHX/95',
-  'POR': 'to-POR/95',
-  'SAC': 'to-SAC/95',
-  'SAS': 'to-SAS/95',
-  'TOR': 'to-TOR/95',
-  'UTA': 'to-UTA/95',
-  'WAS': 'to-WAS/95'
+  'ATL': 'to-ATL',
+  'BOS': 'to-BOS',
+  'CLE': 'to-CLE',
+  'MIA': 'to-MIA',
+  'OKC': 'to-OKC',
+  'GSW': 'to-GSW',
+  'HOU': 'to-HOU',
+  'BKN': 'to-BKN',
+  'CHA': 'to-CHA',
+  'CHI': 'to-CHI',
+  'DAL': 'to-DAL',
+  'DEN': 'to-DEN',
+  'DET': 'to-DET',
+  'IND': 'to-IND',
+  'LAC': 'to-LAC',
+  'LAL': 'to-LAL',
+  'MEM': 'to-MEM',
+  'MIL': 'to-MIL',
+  'MIN': 'to-MIN',
+  'NOP': 'to-NOP',
+  'NYK': 'to-NYK',
+  'ORL': 'to-ORL',
+  'PHI': 'to-PHI',
+  'PHX': 'to-PHX',
+  'POR': 'to-POR',
+  'SAC': 'to-SAC',
+  'SAS': 'to-SAS',
+  'TOR': 'to-TOR',
+  'UTA': 'to-UTA',
+  'WAS': 'to-WAS'
 }
 
 const PlayerCard = ( {player, isTurn, hidden, winner, highlightStat, gameData} ) => {
@@ -50,10 +51,10 @@ const PlayerCard = ( {player, isTurn, hidden, winner, highlightStat, gameData} )
   }
 
   return (
-    <div className={`flip-card ${hidden ? "" : "flipped"} w-80 h-128`}>
+    <div className={`flip-card ${hidden ? "" : "flipped"} w-80 h-128 z-20`}>
       <div className="flip-card-inner">
         <div className="flip-card-front">
-          <div className="m-auto bg-card-back bg-cover bg-center w-80 h-128 rounded-3xl border-solid border-4 border-white flex flex-col gap-y-2"></div>
+          <PlayerCardBack />
         </div>
         <div className="flip-card-back">
         <div className={`${winner && 'shadow-xl shadow-yellow-300'} m-auto bg-gradient-to-br from-slate-100 ${teams[player.team]} w-80 h-128 rounded-3xl border-solid border-4 border-white flex flex-col p-6 gap-y-2`}>
