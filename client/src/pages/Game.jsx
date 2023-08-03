@@ -7,6 +7,7 @@ import Confetti from 'react-confetti';
 import Layout from "../components/Layout";
 import PlayerCard from '../components/PlayerCard';
 import PlayerCardBack from "../components/PlayerCardBack";
+import Loading from "./Loading";
 
 const STAT_CHOSEN_SUBSCRIPTION = gql`
   subscription StatChosen($gameId: ID!) {
@@ -139,7 +140,7 @@ const Game = () => {
   
     // Use Promise.all to wait for all images to load
     Promise.all(loadingPromises).then(() => {
-      setImagesLoading(true);
+      setImagesLoading(false);
     });
   }, []);
 
@@ -171,9 +172,7 @@ const Game = () => {
   } else if (imagesLoading) {
     return (
       <Layout>
-        <div className="h-full flex flex-col">
-          <div className="m-auto font-primary text-5xl text-white">Loading...</div>
-        </div>
+        <Loading />
       </Layout>
     )
   } else {
