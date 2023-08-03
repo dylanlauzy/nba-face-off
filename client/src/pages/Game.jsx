@@ -112,6 +112,15 @@ const Game = () => {
   useEffect(() => {
     // Create an array to store the loading promises
     const loadingPromises = [];
+
+    // preload winner image
+    const winImg = new Image();
+    winImg.src = require("../assets/goat.png");
+
+    loadingPromises.push(new Promise((resolve, reject) => {
+      winImg.onload = resolve;
+      winImg.onerror = reject;
+    }))
   
     // Preload all player images
     gameState.players.forEach(player => {
@@ -130,7 +139,7 @@ const Game = () => {
   
     // Use Promise.all to wait for all images to load
     Promise.all(loadingPromises).then(() => {
-      setImagesLoading(false);
+      setImagesLoading(true);
     });
   }, []);
 
@@ -138,28 +147,33 @@ const Game = () => {
   
   if(gameState.winner) {
     return (
-      <>
-        <Layout>
-          <Confetti
-            width={width}
-            height={height}
-            recycle={false}
-            numberOfPieces={1000}
-            tweenDuration={10000}
+      <Layout>
+        <div className="flex flex-col h-full justify-center items-center">
+          <img 
+            src={require("../assets/goat.png")}
+            alt="Goat"
+            onLoad={() => setImagesLoading(false)}
+            className="w-64 h-auto"
           />
-          <div className="flex flex-col h-full justify-center items-center">
-            <img src={require("../assets/goat.png")} alt="Goat" className="w-64 h-auto"/>
-            <div className="text-6xl text-white font-bold text-center">
-              {`${gameState.players.find(player => player.id === gameState.winner).name} is the winner!!`}
-            </div>
+          <div className="text-6xl text-white font-bold text-center">
+            {`${gameState.players.find(player => player.id === gameState.winner).name} is the winner!!`}
           </div>
-        </Layout>
-      </>
+        </div>
+        <Confetti
+          width={width}
+          height={height}
+          recycle={false}
+          numberOfPieces={1000}
+          tweenDuration={10000}
+        />
+      </Layout>
     )
   } else if (imagesLoading) {
     return (
       <Layout>
-        Loading...
+        <div className="h-full flex flex-col">
+          <div className="m-auto font-primary text-5xl text-white">Loading...</div>
+        </div>
       </Layout>
     )
   } else {
@@ -211,7 +225,7 @@ const Game = () => {
                   <PlayerCardBack
                     index={index}
                     stacked={true}
-                    style={{position: 'absolute', left: `${index * 15}px`, zIndex: 12 - (index + 1)}}
+                    style={{position: 'absolute', left: `${(index + 1) * 15}px`, zIndex: 12 - (index + 1)}}
                   /> )
                 }
               </div>
