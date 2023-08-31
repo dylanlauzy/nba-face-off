@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 
+import { useState } from 'react';
+
 import {
   IconButton,
   Tooltip,
@@ -13,35 +15,60 @@ import {
   useDisclosure
 } from '@chakra-ui/react'
 
-import { FaQuestion } from 'react-icons/fa';
+import {
+  FaQuestion,
+  FaGithub,
+  FaLinkedin,
+} from 'react-icons/fa';
 
 const Layout = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [navHover, setNavHover] = useState(false)
 
   return (
     <div className="h-screen bg-hero bg-cover">
-      <header className="fixed z-10 w-full py-6 px-16 bg-black/75 flex justify-between items-end font-primary text-white font-bold">
-        <h1 className="text-5xl">
-          <Link to="/">NBA Face Off</Link>
-        </h1>
-        <div className="flex gap-x-8 text-xl">
-          <Link to="/">New Game</Link>
-          <Link to="/">About</Link>
+      <header
+        className="fixed z-10 w-full"
+        onMouseOver={() => setNavHover(true)}
+        onMouseOut={() => setNavHover(false)}
+      >
+        <div className={`${navHover ? "translate-y-0": "-translate-y-24"} transition-all flex justify-between items-end py-6 px-16 bg-black/75 font-primary text-white font-bold`}>
+          <h1 className="text-5xl">
+            <Link to="/">NBA Face Off</Link>
+          </h1>
+          <div className="flex gap-x-8 text-xl">
+            <Link to="/">New Game</Link>
+          </div>
         </div>
       </header>
 
-      <main className="pt-24 h-screen overflow-scroll">
+      <main className="h-screen overflow-scroll">
         {children}
       </main>
 
-      <Tooltip label="Rules" hasArrow arrowSize={6}>
-        <IconButton aria-label="open rules" icon={<FaQuestion />} onClick={onOpen} borderRadius="full" pos="absolute" bottom="5" right="5"/>
+      <Tooltip label="About" hasArrow arrowSize={6}>
+        <IconButton aria-label="open about" icon={<FaQuestion />} onClick={onOpen} borderRadius="full" pos="absolute" bottom="5" right="5"/>
       </Tooltip>
       <Modal isOpen={isOpen} onClose={onClose} isCentered size="lg" scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
-          <ModalHeader fontSize="3xl">NBA Face Off - How to Play</ModalHeader>
+          <ModalHeader>
+            <h1 className="text-3xl">NBA Face Off</h1>
+            <div className="flex gap-x-2">
+              <h2 className="text-base text-gray-500 font-normal">An NBA card game developed by <a href="https://dylanlau.com" target="_blank" className="underline hover:text-gray-400">Dylan Lau</a></h2>
+              <div className="flex gap-x-2">
+                <a href="https://github.com/dylanlauzy/nba-face-off" target="_blank" className="hover:text-gray-500 transition-all">
+                  <FaGithub/>
+                </a>
+                <a href="https://www.linkedin.com/in/dylanzylau/" target="_blank" className="hover:text-gray-500 transition-all">
+                  <FaLinkedin />
+                </a>
+            </div>
+            </div>
+          </ModalHeader>
+
+          <hr />
           
           <ModalBody>
             <b>Overview:</b> NBA Face-Off is a web-based card game that challenges your NBA knowledge and luck. The game is played with a deck of NBA player cards, each featuring a player and their stats from the past season. The objective of the game is to win all of your opponent's cards. 

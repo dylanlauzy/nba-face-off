@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import { useSubscription, gql } from "@apollo/client";
 import {useWindowSize} from 'react-use';
 import Confetti from 'react-confetti';
 
+import { FaRedo } from "react-icons/fa"
+import { Button } from "@chakra-ui/react"
 import Layout from "../components/Layout";
 import PlayerCard from '../components/PlayerCard';
 import PlayerCardBack from "../components/PlayerCardBack";
@@ -149,7 +151,7 @@ const Game = () => {
   if(gameState.winner) {
     return (
       <Layout>
-        <div className="flex flex-col h-full justify-center items-center">
+        <div className="flex flex-col gap-y-4 h-full justify-center items-center">
           <img 
             src={require("../assets/goat.png")}
             alt="Goat"
@@ -159,6 +161,9 @@ const Game = () => {
           <div className="text-6xl text-white font-bold text-center">
             {`${gameState.players.find(player => player.id === gameState.winner).name} is the winner!!`}
           </div>
+          <Link>
+            <Button leftIcon={<FaRedo />}>Rematch</Button>
+          </Link>
         </div>
         <Confetti
           width={width}
