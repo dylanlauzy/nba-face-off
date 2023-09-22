@@ -4,12 +4,11 @@ import { useSubscription, gql } from "@apollo/client";
 import {useWindowSize} from 'react-use';
 import Confetti from 'react-confetti';
 
-import { FaRedo } from "react-icons/fa"
-import { Button } from "@chakra-ui/react"
 import Layout from "../components/Layout";
 import PlayerCard from '../components/PlayerCard';
 import PlayerCardBack from "../components/PlayerCardBack";
 import Loading from "./Loading";
+import RematchButton from "../components/RematchButton";
 
 const STAT_CHOSEN_SUBSCRIPTION = gql`
   subscription StatChosen($gameId: ID!) {
@@ -93,7 +92,6 @@ const Game = () => {
         }, 500)
       }, 3000)
     }, 500)
-
   }
 
   const { data: selectionData, loading: statChosenLoading } = useSubscription(
@@ -161,9 +159,10 @@ const Game = () => {
           <div className="text-6xl text-white font-bold text-center">
             {`${gameState.players.find(player => player.id === gameState.winner).name} is the winner!!`}
           </div>
-          <Link>
-            <Button leftIcon={<FaRedo />}>Rematch</Button>
-          </Link>
+          {/* <RematchButton
+            gameState={gameState}
+            user={me}
+          /> */}
         </div>
         <Confetti
           width={width}

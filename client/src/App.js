@@ -69,6 +69,7 @@ const GET_STATE_GAME = gql`
         name
         team
         cardsLeft
+        rematchReady
         cards {
           id
           name

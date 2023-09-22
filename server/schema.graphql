@@ -26,6 +26,7 @@ type Player {
   name: String!
   cards: [NBAPlayer]
   cardsLeft: Int
+  rematchReady: Boolean
 }
 
 type Game {

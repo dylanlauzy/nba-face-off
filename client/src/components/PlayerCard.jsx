@@ -69,8 +69,6 @@ const PlayerCard = ( {player, isTurn, hidden, winner, highlightStat, gameData} )
           <img alt={`player headshot for ${player.name}`} src={`https://cdn.nba.com/headshots/nba/latest/1040x760/${player.id}.png`} className="h-44 object-cover border-solid border-2 border-black"></img>
 
           <Stats player={player} isTurn={isTurn} highlightStat={highlightStat} gameData={gameData}/>
-
-          
         </div>
         </div>
       </div>
